@@ -10,9 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{66B9AC66-C4DE-46C4-812C-E51170C76D62}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ViewModel", "ViewModel", "{51C7811A-A5A6-445B-8D5D-E37DC57AEB10}"
-	ProjectSection(SolutionItems) = preProject
-		Auth.cs = Auth.cs
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

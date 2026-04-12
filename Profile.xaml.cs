@@ -31,7 +31,7 @@ namespace AISDisciplineDesc
             LabelDivision.Content = AppState.CurrentUser.division;
             LabelRole.Content = AppState.CurrentUser.role;
             LabelPhone.Content = AppState.CurrentUser.phone;
-            LabelAdress.Content = "В разработке";
+            LabelAdress.Content = AppState.CurrentUser.address;
             LabelEmail.Content = AppState.CurrentUser.email;
         }
 

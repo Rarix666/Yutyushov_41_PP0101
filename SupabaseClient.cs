@@ -70,6 +70,7 @@ namespace AISDisciplineDesc
                     role = result["role"]?.Value<string>(),
                     phone = result["phone"]?.Value<string>(),
                     division = result["division"]?.Value<string>(),
+                    address = result["address"]?.Value<string>(),
                     unit = result["unit"]?.Value<string>()
                 };
                 return true;

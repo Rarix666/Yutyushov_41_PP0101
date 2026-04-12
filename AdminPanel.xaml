@@ -77,8 +77,8 @@
         <TextBox Name="TextPassword" HorizontalAlignment="Left" Margin="78,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="165"/>
         <TextBox Name="TextName" HorizontalAlignment="Left" Margin="68,161,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="175"/>
         <TextBox Name="TextRole" HorizontalAlignment="Left" Margin="65,255,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="178"/>
-        <Button Click="SaveUser_Click" Content="Сохранить" HorizontalAlignment="Left" Margin="99,299,0,0" VerticalAlignment="Top" Width="91"/>
-        <Button Click="ButtonExit_Click" Content="Выйти" HorizontalAlignment="Left" Margin="706,14,0,0" VerticalAlignment="Top" Height="36" Width="71" FontSize="18"/>
+        <Button Click="SaveUser_Click" Content="Сохранить" HorizontalAlignment="Left" Margin="99,299,0,0" VerticalAlignment="Top" Width="110"/>
+        <Button Click="ButtonExit_Click" Content="Выйти" HorizontalAlignment="Left" Margin="682,14,0,0" VerticalAlignment="Top" Height="36" Width="95" FontSize="18"/>
         <ComboBox Name="TextDiv" DisplayMemberPath="name" HorizontalAlignment="Left" Margin="123,190,0,0" VerticalAlignment="Top" Width="120"/>
         <ComboBox Name="TextUnit" DisplayMemberPath="number" HorizontalAlignment="Left" Margin="68,221,0,0" VerticalAlignment="Top" Width="175"/>
     </Grid>

@@ -14,7 +14,7 @@ namespace AISDisciplineDesc
         static AppSettings()
         {
             var builder = new ConfigurationBuilder()
-                .AddUserSecrets<MainWindow>(); // или любой тип из вашего проекта
+                .AddUserSecrets<MainWindow>(); 
             Configuration = builder.Build();
         }
 
