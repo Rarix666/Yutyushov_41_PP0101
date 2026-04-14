@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AISDisciplineDesc"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="AdminPanel" Height="450" Width="800">
+        Title="Администратор" Height="450" Width="800">
     <Grid>
         <Label Content="Администратор:" HorizontalAlignment="Left" Margin="51,29,0,0" VerticalAlignment="Top" FontSize="24"/>
         <Label Name="LabelNameAdmin" Content="..." HorizontalAlignment="Left" Margin="244,29,0,0" VerticalAlignment="Top" FontSize="24"/>

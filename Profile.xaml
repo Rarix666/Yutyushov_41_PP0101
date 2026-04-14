@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AISDisciplineDesc"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Profile" Height="450" Width="800">
+        Title="Личное дело" Height="450" Width="800">
     <Grid>
         <Label Content="Личное дело" HorizontalAlignment="Left" Margin="36,22,0,0" VerticalAlignment="Top" FontSize="24"/>
         <Label Content="ФИО:" HorizontalAlignment="Left" Margin="94,101,0,0" VerticalAlignment="Top"/>

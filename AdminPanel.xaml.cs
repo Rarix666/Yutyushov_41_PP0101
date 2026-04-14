@@ -47,24 +47,21 @@ namespace AISDisciplineDesc
         }
         private void AdminDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selected = AdminDataGrid.SelectedItem as AdminData; // убедитесь, что тип правильный
+            var selected = AdminDataGrid.SelectedItem as AdminData; 
             if (selected == null) return;
 
-            // Заполняем текстовые поля
             TextLogin.Text = selected.login;
             TextName.Text = selected.name;
             TextRole.Text = selected.role;
-            // Пароль не выводим
+
             TextPassword.Text = "";
 
-            // Подразделение (TextDiv)
             if (TextDiv.ItemsSource != null)
             {
                 var division = TextDiv.ItemsSource.Cast<dynamic>().FirstOrDefault(d => d.name == selected.division);
                 TextDiv.SelectedItem = division;
             }
 
-            // Часть (TextUnit)
             if (TextUnit.ItemsSource != null)
             {
                 var unit = TextUnit.ItemsSource.Cast<dynamic>().FirstOrDefault(u => u.number == selected.unit);
@@ -84,6 +81,7 @@ namespace AISDisciplineDesc
                 }
 
                 var AdminData = AppState.AdminDataUsers
+                    .Where(w => w.role != "admin")
                     .Select(w => new AdminData
                     {
                         id = w.id,

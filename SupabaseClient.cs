@@ -113,6 +113,15 @@ namespace AISDisciplineDesc
             }
         }
 
+        public async Task<List<PersonnelData>> GetPersonnelList()
+        {
+            var request = CreateRequest("/rest/v1/rpc/get_all_users", Method.Post);
+            request.AddJsonBody(new { }); // пустой объект, так как функция не требует параметров
+            var response = await client.ExecuteAsync(request);
+            if (!response.IsSuccessful) return new List<PersonnelData>();
+            return JsonConvert.DeserializeObject<List<PersonnelData>>(response.Content);
+        }
+
         public async Task<bool> CreateUser(string clogin, string cpassword, string cname, string cdivision, string cunit, string crole)
         {
 
@@ -214,6 +223,21 @@ namespace AISDisciplineDesc
             {
                 return false;
             }
+        }
+
+        public async Task<bool> UpdateUserProfile(int userId, string phone, string email, string address, string division)
+        {
+            var request = CreateRequest("/rest/v1/rpc/update_user_profile", Method.Post);
+            request.AddJsonBody(new
+            {
+                p_id = userId,
+                p_phone = phone ?? "",
+                p_email = email ?? "",
+                p_address = address ?? "",
+                p_division = division ?? ""
+            });
+            var response = await client.ExecuteAsync(request);
+            return response.IsSuccessful && response.Content?.ToLower() == "true";
         }
     }
 }

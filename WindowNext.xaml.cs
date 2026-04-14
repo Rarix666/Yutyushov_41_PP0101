@@ -44,7 +44,7 @@ namespace AISDisciplineDesc
                 }
 
                 var DocsData = AppState.Documentation
-                    .Where(w => w.Division == AppState.CurrentUser.division && w.unit == AppState.CurrentUser.unit)
+                    .Where(w => w.Division == AppState.CurrentUser.division && w.unit == AppState.CurrentUser.unit && w.Status != "Выполнено")
                     .Select(w => new Documents
                     {
                         id = w.id,
@@ -77,12 +77,19 @@ namespace AISDisciplineDesc
                 return;
             }
 
+            var result = MessageBox.Show($"Обновить статус документа {selectedIdOrder.Name}? ВНИМАНИЕ: после обновления статуса, документ исчезнет из списка!",
+                                         "Подтверждение обновления статуса",
+                                         MessageBoxButton.YesNo,
+                                         MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes)
+                return;
+
             bool success = await AppState.Supabase.UpdateStatusOrder(selectedIdOrder.id, status);
             if (success)
             {
                 MessageBox.Show("Статус обновлён");
-                selectedIdOrder.Status = status; 
-                DataBaseGrid.Items.Refresh();    
+                selectedIdOrder.Status = status;
+                LoadDocumentData();     
             }
             else
             {

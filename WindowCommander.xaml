@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:AISDisciplineDesc"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="WindowCommander" Height="450" Width="800">
+        Title="Главное окно" Height="450" Width="800">
     <Grid>
         <Image HorizontalAlignment="Left" Height="100" Margin="28,25,0,0" VerticalAlignment="Top" Width="100"/>
         <Button Click="ButtonExit_Click" Content="Выйти" HorizontalAlignment="Left" Margin="683,25,0,0" VerticalAlignment="Top" Height="46" Width="88" FontSize="18"/>
-        <Button Click="ButtonOrderForm_Click" Content="Приказы" HorizontalAlignment="Left" Margin="504,25,0,0" VerticalAlignment="Top" Height="46" Width="114" FontSize="18"/>
+        <Button Click="ButtonOrderForm_Click" Content="Приказы" HorizontalAlignment="Left" Margin="562,25,0,0" VerticalAlignment="Top" Height="46" Width="114" FontSize="18"/>
         <Label Name="LabelName" Content="Личное дело" HorizontalAlignment="Left" Margin="143,53,0,0" VerticalAlignment="Top" FontSize="20" PreviewMouseDown="LabelProf_Click"/>
         <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="42,146,0,0" VerticalAlignment="Top"/>
         <ComboBox Name="DivisionComboBox" DisplayMemberPath="name" SelectedValuePath="id" HorizontalAlignment="Left" Margin="143,148,0,0" VerticalAlignment="Top" Width="152"/>
@@ -27,6 +27,7 @@
         <Label Content="Срок исполнения:" HorizontalAlignment="Left" Margin="74,344,0,0" VerticalAlignment="Top"/>
         <TextBox Name="TextDueDate" HorizontalAlignment="Left" Margin="186,348,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
         <Button Click="ButtonCreateOrder_Click" Content="Отправить" HorizontalAlignment="Center" Margin="0,373,0,0" VerticalAlignment="Top" Height="29" Width="138"/>
+        <Button Click="ButtonOpenCommanders_Click" Content="Личные дела" HorizontalAlignment="Left" Margin="408,25,0,0" VerticalAlignment="Top" Height="46" Width="149" FontSize="18"/>
 
     </Grid>
 </Window>

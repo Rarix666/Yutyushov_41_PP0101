@@ -64,6 +64,7 @@ namespace AISDisciplineDesc
                         DateDispatch = w.DateDispatch,
                         DueDate = w.DueDate,
                         Status = w.Status,
+                        Description = w.Description
                     })
                     .ToList();
 
@@ -77,7 +78,19 @@ namespace AISDisciplineDesc
                 MessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
+        private void OpenOrderText_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedDocument = (Documents)DataBaseGrid.SelectedItem;
+            if (selectedDocument == null)
+            {
+                MessageBox.Show("Не выбрана запись для открытия.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
+            var detailWindow = new DescriptionOrder(selectedDocument);
+            detailWindow.Owner = this;
+            detailWindow.ShowDialog();
+        }
         private void ButtonExit_Click(object sender, EventArgs e)
         {
             WindowCommander commander = new WindowCommander();

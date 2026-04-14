@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AISDisciplineDesc"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="WindowOrder" Height="450" Width="800">
+        Title="Приказы" Height="450" Width="800">
     <Grid>
         <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="35,30,0,0" VerticalAlignment="Top"/>
         <ComboBox Name="DivCombobox" DisplayMemberPath="name" SelectedValuePath="id" SelectionChanged="Div_SelectChanged" HorizontalAlignment="Left" Margin="139,32,0,0" VerticalAlignment="Top" Width="184"/>
@@ -16,6 +16,11 @@
           CanUserAddRows="False"
           GridLinesVisibility="Horizontal"
           RowHeight="NaN">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Открыть" Click="OpenOrderText_Click" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Наименование" 
                             Binding="{Binding Name}" 

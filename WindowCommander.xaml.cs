@@ -88,7 +88,12 @@ namespace AISDisciplineDesc
             order.Show();
             this.Hide();
         }
-
+        private void ButtonOpenCommanders_Click(object sender, RoutedEventArgs e)
+        {
+            DivisionCommander division = new DivisionCommander();
+            division.Show();
+            this.Hide();
+        }
         private void ButtonExit_Click(object sender, RoutedEventArgs e)
         {
             MainWindow main = new MainWindow();
