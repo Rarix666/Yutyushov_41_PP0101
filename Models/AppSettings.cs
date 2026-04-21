@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AISDisciplineDesc
+namespace AISDisciplineDesc.Models
 {
     internal class AppSettings
     {

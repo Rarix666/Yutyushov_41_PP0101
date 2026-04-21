@@ -27,7 +27,7 @@
         <Label Content="Срок исполнения:" HorizontalAlignment="Left" Margin="74,344,0,0" VerticalAlignment="Top"/>
         <TextBox Name="TextDueDate" HorizontalAlignment="Left" Margin="186,348,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
         <Button Click="ButtonCreateOrder_Click" Content="Отправить" HorizontalAlignment="Center" Margin="0,373,0,0" VerticalAlignment="Top" Height="29" Width="138"/>
-        <Button Click="ButtonOpenCommanders_Click" Content="Личные дела" HorizontalAlignment="Left" Margin="408,25,0,0" VerticalAlignment="Top" Height="46" Width="149" FontSize="18"/>
+        <Button Click="ButtonOpenCommanders_Click" Content="Личные дела" HorizontalAlignment="Left" Margin="596,76,0,0" VerticalAlignment="Top" Height="46" Width="149" FontSize="18"/>
 
     </Grid>
 </Window>

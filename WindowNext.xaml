@@ -7,11 +7,13 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="Главное окно" Height="450" Width="800">
+    <Window.Resources>
+        <local:StringToImageSourceConverter x:Key="ImageConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -19,62 +21,58 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <Image Name="ImageButton" Width="100" Height="100" 
-               Grid.Row="0" Grid.Column="0" Margin="10"/>
-        <Label Name="LabelProfile" Content="Личное дело" FontSize="20" 
-               Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="10" PreviewMouseDown="LabelProf_Click"/>
-        <Button Name="ButtonExit" Content="Выйти" Width="100" Height="40" Click="ButtonExit_Click" 
-                Grid.Row="0" Grid.Column="2" Margin="10" FontSize="22"/>
+        <Image Grid.Row="0" Grid.Column="0" Width="100" Height="100" Margin="10" Stretch="UniformToFill"
+               Source="{Binding AvatarUrl, Converter={StaticResource ImageConverter}}"/>
 
-        <DataGrid Name="DataBaseGrid" 
-                  Grid.Row="1" 
-                  Grid.ColumnSpan="3" 
-                  Margin="10"
+        <Label Grid.Row="0" Grid.Column="1" Content="Личное дело" FontSize="20" 
+               VerticalAlignment="Center" Margin="10" Cursor="Hand">
+            <Label.InputBindings>
+                <MouseBinding Gesture="LeftClick" Command="{Binding OpenProfileCommand}"/>
+            </Label.InputBindings>
+        </Label>
+
+        <Button Grid.Row="0" Grid.Column="2" Content="Выйти" Width="100" Height="40" 
+                Margin="10" FontSize="22" Command="{Binding ExitCommand}"/>
+
+        <DataGrid x:Name="DataBaseGrid" Grid.Row="1" Grid.ColumnSpan="3" Margin="10"
+                  ItemsSource="{Binding Documents}"
+                  SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  GridLinesVisibility="Horizontal"
-                  RowHeight="NaN">
+                  GridLinesVisibility="Horizontal">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Выполнено" Click="UpdateOrderStatus_Click" />
-                    <MenuItem Header="Открыть" Click="OpenOrderText_Click" />
+                    <MenuItem Header="Выполнено" 
+                              Command="{Binding UpdateStatusCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                    <MenuItem Header="Открыть" 
+                              Command="{Binding OpenOrderCommand}"
+                              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Наименование" 
-                                    Binding="{Binding Name}" 
-                                    Width="*" 
-                                    IsReadOnly="True">
+                <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Дата регистрации" 
-                                    Binding="{Binding DateDispatch,  StringFormat=dd.MM.yyyy}" 
-                                    Width="*" 
-                                    IsReadOnly="True">
+                <DataGridTextColumn Header="Дата регистрации" Binding="{Binding DateDispatch, StringFormat=dd.MM.yyyy}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Срок исполнения" 
-                    Binding="{Binding DueDate,  StringFormat=dd.MM.yyyy}" 
-                    Width="*" 
-                    IsReadOnly="True">
+                <DataGridTextColumn Header="Срок исполнения" Binding="{Binding DueDate, StringFormat=dd.MM.yyyy}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Отметка о выполнении" 
-                    Binding="{Binding Status}" 
-                    Width="*" 
-                    IsReadOnly="True">
+                <DataGridTextColumn Header="Отметка о выполнении" Binding="{Binding Status}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>

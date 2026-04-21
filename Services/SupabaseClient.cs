@@ -12,8 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using BCrypt.Net;
+using AISDisciplineDesc.Models;
 
-namespace AISDisciplineDesc
+namespace AISDisciplineDesc.Services
 {
     internal class SupabaseClient
     {
@@ -71,7 +72,8 @@ namespace AISDisciplineDesc
                     phone = result["phone"]?.Value<string>(),
                     division = result["division"]?.Value<string>(),
                     address = result["address"]?.Value<string>(),
-                    unit = result["unit"]?.Value<string>()
+                    unit = result["unit"]?.Value<string>(),
+                    avatar_url = result["avatar_url"]?.Value<string>()
                 };
                 return true;
             }
@@ -159,7 +161,7 @@ namespace AISDisciplineDesc
             }
         }
 
-        public async Task<bool> UnitInformation() //Метод необходимый для заполнения combobox подразделений
+        public async Task<bool> UnitInformation() 
         {
             var request = CreateRequest("/rest/v1/rpc/units_for_combobox");
             var response = await client.ExecuteAsync(request);
@@ -185,13 +187,12 @@ namespace AISDisciplineDesc
             if (!response.IsSuccessful || response.Content != "true")
             {
                 string error = $"Status: {response.StatusCode}, Content: {response.Content}, Error: {response.ErrorMessage}";
-                //MessageBox.Show(error);
             }
 
             return response.StatusCode == System.Net.HttpStatusCode.OK && response.Content == "true";
         }
 
-        public async Task<bool> UpdateStatusOrder(int upid, string upstatus) //Метод обновления данных о статусе задач сотрудников
+        public async Task<bool> UpdateStatusOrder(int upid, string upstatus) //Метод обновления данных о статусе приказов
         {
             var param = new { upid, upstatus };
             var request = CreateRequest("rest/v1/rpc/update_document_status", Method.Post);

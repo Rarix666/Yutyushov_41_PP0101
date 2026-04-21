@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AISDisciplineDesc
+namespace AISDisciplineDesc.Models
 {
     public class UserData //Конструктор для пользователя
     {
@@ -17,6 +17,7 @@ namespace AISDisciplineDesc
         public string phone { get; set; }
         public string address { get; set; }
         public string unit { get; set; }
+        public string avatar_url { get; set; }
 
     }
 

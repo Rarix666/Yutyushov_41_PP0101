@@ -10,7 +10,7 @@
     <Grid>
         <Label Content="Личное дело" HorizontalAlignment="Left" Margin="36,22,0,0" VerticalAlignment="Top" FontSize="24"/>
         <Label Content="ФИО:" HorizontalAlignment="Left" Margin="94,101,0,0" VerticalAlignment="Top"/>
-        <Label Content="Номер подразделения:" HorizontalAlignment="Left" Margin="94,143,0,0" VerticalAlignment="Top"/>
+        <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="94,143,0,0" VerticalAlignment="Top"/>
         <Label Content="Должность:" HorizontalAlignment="Left" Margin="94,191,0,0" VerticalAlignment="Top"/>
         <Label Content="Телефон:" HorizontalAlignment="Left" Margin="94,236,0,0" VerticalAlignment="Top"/>
         <Label Content="Адрес:" HorizontalAlignment="Left" Margin="94,292,0,0" VerticalAlignment="Top"/>

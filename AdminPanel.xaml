@@ -9,11 +9,11 @@
         Title="Администратор" Height="450" Width="800">
     <Grid>
         <Label Content="Администратор:" HorizontalAlignment="Left" Margin="51,29,0,0" VerticalAlignment="Top" FontSize="24"/>
-        <Label Name="LabelNameAdmin" Content="..." HorizontalAlignment="Left" Margin="244,29,0,0" VerticalAlignment="Top" FontSize="24"/>
+        <Label Name="LabelNameAdmin" Content="{Binding AdminName}" HorizontalAlignment="Left" Margin="244,29,0,0" VerticalAlignment="Top" FontSize="24"/>
 
         <DataGrid Name="AdminDataGrid" 
-          SelectionChanged="AdminDataGrid_SelectionChanged"
-          MouseDown="AdminDataGrid_MouseDown"
+          ItemsSource="{Binding Users}"
+          SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
           Margin="274,78,10,10"
           AutoGenerateColumns="False"
           CanUserAddRows="False"
@@ -21,7 +21,7 @@
           RowHeight="NaN">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Удалить" Click="DeleteUser_Click" />
+                    <MenuItem Header="Удалить" Command="{Binding DeleteCommand}" />
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
@@ -73,13 +73,21 @@
         <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="24,188,0,0" VerticalAlignment="Top"/>
         <Label Content="Часть:" HorizontalAlignment="Left" Margin="24,219,0,0" VerticalAlignment="Top"/>
         <Label Content="Роль:" HorizontalAlignment="Left" Margin="24,251,0,0" VerticalAlignment="Top"/>
-        <TextBox Name="TextLogin" HorizontalAlignment="Left" Margin="73,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="170"/>
-        <TextBox Name="TextPassword" HorizontalAlignment="Left" Margin="78,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="165"/>
-        <TextBox Name="TextName" HorizontalAlignment="Left" Margin="68,161,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="175"/>
-        <TextBox Name="TextRole" HorizontalAlignment="Left" Margin="65,255,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="178"/>
-        <Button Click="SaveUser_Click" Content="Сохранить" HorizontalAlignment="Left" Margin="99,299,0,0" VerticalAlignment="Top" Width="110"/>
-        <Button Click="ButtonExit_Click" Content="Выйти" HorizontalAlignment="Left" Margin="682,14,0,0" VerticalAlignment="Top" Height="36" Width="95" FontSize="18"/>
-        <ComboBox Name="TextDiv" DisplayMemberPath="name" HorizontalAlignment="Left" Margin="123,190,0,0" VerticalAlignment="Top" Width="120"/>
-        <ComboBox Name="TextUnit" DisplayMemberPath="number" HorizontalAlignment="Left" Margin="68,221,0,0" VerticalAlignment="Top" Width="175"/>
+        <TextBox Name="TextLogin" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="73,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170"/>
+        <TextBox Name="TextPassword" Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="78,130,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165"/>
+        <TextBox Name="TextName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="68,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175"/>
+        <Button Command="{Binding SaveCommand}" Content="Сохранить" HorizontalAlignment="Left" Margin="99,299,0,0" VerticalAlignment="Top" Width="110"/>
+        <Button Command="{Binding ExitCommand}" Content="Выйти" HorizontalAlignment="Left" Margin="682,14,0,0" VerticalAlignment="Top" Height="36" Width="95" FontSize="18"/>
+        <ComboBox Name="TextDiv" DisplayMemberPath="name" ItemsSource="{Binding Divisions}" SelectedItem="{Binding SelectedDivision}" HorizontalAlignment="Left" Margin="123,190,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox Name="TextUnit" DisplayMemberPath="number" ItemsSource="{Binding Units}" SelectedItem="{Binding SelectedUnit}" HorizontalAlignment="Left" Margin="68,221,0,0" VerticalAlignment="Top" Width="175"/>
+        <ComboBox Name="TextRole" 
+          SelectedValue="{Binding SelectedRole}" SelectedValuePath="Content"
+          HorizontalAlignment="Left" 
+          Margin="68,251,0,0" 
+          VerticalAlignment="Top" 
+          Width="175">
+            <ComboBoxItem Content="Командир подразделения"/>
+            <ComboBoxItem Content="Командир части"/>
+        </ComboBox>
     </Grid>
 </Window>

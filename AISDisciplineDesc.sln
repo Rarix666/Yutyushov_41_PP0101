@@ -5,11 +5,7 @@ VisualStudioVersion = 17.14.36221.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AISDisciplineDesc", "AISDisciplineDesc.csproj", "{B74E9933-9D6C-4B1C-AE88-787CEA6DFFB1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "View", "View", "{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{66B9AC66-C4DE-46C4-812C-E51170C76D62}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ViewModel", "ViewModel", "{51C7811A-A5A6-445B-8D5D-E37DC57AEB10}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupAISdiscipline", "..\SetupAISdiscipline\SetupAISdiscipline.vdproj", "{C0725EBB-E521-0D45-DD92-B99A0FF12238}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +17,8 @@ Global
 		{B74E9933-9D6C-4B1C-AE88-787CEA6DFFB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B74E9933-9D6C-4B1C-AE88-787CEA6DFFB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B74E9933-9D6C-4B1C-AE88-787CEA6DFFB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0725EBB-E521-0D45-DD92-B99A0FF12238}.Debug|Any CPU.ActiveCfg = Debug
+		{C0725EBB-E521-0D45-DD92-B99A0FF12238}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

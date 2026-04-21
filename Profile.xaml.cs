@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AISDisciplineDesc.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,13 +38,13 @@ namespace AISDisciplineDesc
 
         public void ButtonExit_Click (object sender, RoutedEventArgs e)
         {
-            if (AppState.CurrentUser.role == "Commander")
+            if (AppState.CurrentUser.role == "Командир части")
             {
                 WindowCommander windowCommander = new WindowCommander();
                 windowCommander.Show();
                 this.Close();
             }
-            if (AppState.CurrentUser.role != "Commander")
+            if (AppState.CurrentUser.role != "Командир части")
             {
                 WindowNext windowNext = new WindowNext();
                 this.Close();

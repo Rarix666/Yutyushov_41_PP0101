@@ -1,11 +1,12 @@
-﻿using System;
+﻿using AISDisciplineDesc.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace AISDisciplineDesc
+namespace AISDisciplineDesc.Services
 {
     internal class AppState
     {

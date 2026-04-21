@@ -26,4 +26,8 @@
     <PackageReference Include="RestSharp" Version="114.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\" />
+  </ItemGroup>
+
 </Project>

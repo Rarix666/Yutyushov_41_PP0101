@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using AISDisciplineDesc.Services;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -44,14 +45,14 @@ namespace AISDisciplineDesc
                         admin.Show();
                         this.Hide();
                     }
-                    if (AppState.CurrentUser.role == "Commander")
+                    if (AppState.CurrentUser.role == "Командир части")
                     {
                         MessageBox.Show("Вы авторизованы как командир части");
                         WindowCommander commander = new WindowCommander();
                         commander.Show();
                         this.Hide();
                     }
-                    if (AppState.CurrentUser.role != "admin" && AppState.CurrentUser.role != "Commander")
+                    if (AppState.CurrentUser.role != "admin" && AppState.CurrentUser.role != "Командир части")
                     {
                         MessageBox.Show("Авторизация прошла успешно!");
                         this.Hide();
