@@ -9,23 +9,29 @@
         Title="Приказы" Height="450" Width="800">
     <Grid>
         <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="35,30,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="DivCombobox" DisplayMemberPath="name" SelectedValuePath="id" SelectionChanged="Div_SelectChanged" HorizontalAlignment="Left" Margin="139,32,0,0" VerticalAlignment="Top" Width="184"/>
+        <ComboBox Name="DivCombobox" DisplayMemberPath="name" 
+                  ItemsSource="{Binding Divisions}"
+                  SelectedItem="{Binding SelectedDivision}"
+                  HorizontalAlignment="Left" Margin="139,32,0,0" VerticalAlignment="Top" Width="184"/>
+
         <DataGrid Name="DataBaseGrid" 
-          Margin="10,126,10,10"
-          AutoGenerateColumns="False"
-          CanUserAddRows="False"
-          GridLinesVisibility="Horizontal"
-          RowHeight="NaN">
+                  ItemsSource="{Binding Documents}"
+                  SelectedItem="{Binding SelectedDocument}"
+                  Margin="10,126,10,10"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  GridLinesVisibility="Horizontal"
+                  RowHeight="NaN">
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Открыть" Click="OpenOrderText_Click" />
+                    <MenuItem Header="Открыть" Command="{Binding OpenDocumentCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Наименование" 
-                            Binding="{Binding Name}" 
-                            Width="*" 
-                            IsReadOnly="True">
+                                    Binding="{Binding Name}" 
+                                    Width="*" 
+                                    IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -33,9 +39,9 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Дата регистрации" 
-                            Binding="{Binding DateDispatch,  StringFormat=dd.MM.yyyy}" 
-                            Width="*" 
-                            IsReadOnly="True">
+                                    Binding="{Binding DateDispatch, StringFormat=dd.MM.yyyy}" 
+                                    Width="*" 
+                                    IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -43,9 +49,9 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Срок исполнения" 
-            Binding="{Binding DueDate,  StringFormat=dd.MM.yyyy}" 
-            Width="*" 
-            IsReadOnly="True">
+                                    Binding="{Binding DueDate, StringFormat=dd.MM.yyyy}" 
+                                    Width="*" 
+                                    IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -53,9 +59,9 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
                 <DataGridTextColumn Header="Отметка о выполнении" 
-            Binding="{Binding Status}" 
-            Width="*" 
-            IsReadOnly="True">
+                                    Binding="{Binding Status}" 
+                                    Width="*" 
+                                    IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -64,7 +70,9 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Click="ButtonExit_Click" Content="Назад" HorizontalAlignment="Left" Margin="685,19,0,0" VerticalAlignment="Top" Height="49" Width="90" FontSize="20"/>
 
+        <Button Command="{Binding BackCommand}" Content="Назад" 
+                HorizontalAlignment="Left" Margin="685,19,0,0" 
+                VerticalAlignment="Top" Height="49" Width="90" FontSize="20"/>
     </Grid>
 </Window>

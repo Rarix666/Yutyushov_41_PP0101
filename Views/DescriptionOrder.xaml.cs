@@ -1,4 +1,5 @@
 ﻿using AISDisciplineDesc.Models;
+using AISDisciplineDesc.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,19 +25,7 @@ namespace AISDisciplineDesc
         public DescriptionOrder(Documents document)
         {
             InitializeComponent();
-
-            NameOrder.Content = document.Name;
-
-            if (!string.IsNullOrEmpty(document.Description))
-            {
-                OrderDescriptionBox.Document.Blocks.Clear();
-                OrderDescriptionBox.Document.Blocks.Add(new Paragraph(new Run(document.Description)));
-            }
-            ;
-        }
-        private void ButtonExit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
+            DataContext = new DescriptionOrderViewModel(this, document);
         }
     }
 }

@@ -5,7 +5,6 @@
         Height="450" Width="500"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize">
-
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,29 +24,27 @@
                    VerticalAlignment="Top" 
                    Margin="0,0,16,0"/>
             <Label Grid.Column="1" 
-                   Name="NameOrder" 
-                   Content="..." 
+                   Content="{Binding DocumentName}" 
                    FontSize="18" 
                    VerticalAlignment="Top" />
         </Grid>
 
-        <RichTextBox Grid.Row="2" 
-                     Name="OrderDescriptionBox" 
-                     FontSize="18"
-                     VerticalScrollBarVisibility="Auto"
-                     BorderThickness="1"
-                     BorderBrush="#FF707070"
-                     Margin="0,8,0,16">
+        <FlowDocumentScrollViewer Grid.Row="2" 
+                                  FontSize="18"
+                                  VerticalScrollBarVisibility="Auto"
+                                  BorderThickness="1"
+                                  BorderBrush="#FF707070"
+                                  Margin="0,8,0,16">
             <FlowDocument>
                 <Paragraph>
-                    <Run Text=""/>
+                    <Run Text="{Binding DocumentText}"/>
                 </Paragraph>
             </FlowDocument>
-        </RichTextBox>
+        </FlowDocumentScrollViewer>
 
         <Button Grid.Row="3" 
+                Command="{Binding CloseCommand}"
                 Content="Закрыть" 
-                Click="ButtonExit_Click" 
                 Width="100" 
                 Height="36" 
                 FontSize="14"

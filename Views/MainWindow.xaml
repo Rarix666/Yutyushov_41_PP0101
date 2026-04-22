@@ -34,6 +34,7 @@
                    VerticalAlignment="Center" 
                    Margin="10,0,10,0"/>
             <TextBox x:Name="textBox2" 
+                     Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"
                      Width="180" Height="30" 
                      FontSize="18"/>
         </StackPanel>
@@ -47,6 +48,7 @@
                    VerticalAlignment="Center" 
                    Margin="0,0,10,0"/>
             <PasswordBox x:Name="textBox1" 
+                         PasswordChanged="textBox1_PasswordChanged"
                          Width="180" Height="30" 
                          FontSize="18"/>
         </StackPanel>
@@ -56,7 +58,7 @@
                 Width="120" Height="35" 
                 Content="Войти" 
                 HorizontalAlignment="Center" 
-                Click="Button_Click"
+                Command="{Binding LoginCommand}"
                 Background="#FF03FF91" FontSize="20"
                 Margin="0,10,0,10"/>
     </Grid>

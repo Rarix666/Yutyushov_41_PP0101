@@ -9,19 +9,23 @@
         Title="Личное дело" Height="450" Width="800">
     <Grid>
         <Label Content="Личное дело" HorizontalAlignment="Left" Margin="36,22,0,0" VerticalAlignment="Top" FontSize="24"/>
+
         <Label Content="ФИО:" HorizontalAlignment="Left" Margin="94,101,0,0" VerticalAlignment="Top"/>
         <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="94,143,0,0" VerticalAlignment="Top"/>
         <Label Content="Должность:" HorizontalAlignment="Left" Margin="94,191,0,0" VerticalAlignment="Top"/>
         <Label Content="Телефон:" HorizontalAlignment="Left" Margin="94,236,0,0" VerticalAlignment="Top"/>
         <Label Content="Адрес:" HorizontalAlignment="Left" Margin="94,292,0,0" VerticalAlignment="Top"/>
         <Label Content="Почта:" HorizontalAlignment="Left" Margin="94,340,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelName" Content="Label" HorizontalAlignment="Left" Margin="138,101,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelDivision" Content="Label" HorizontalAlignment="Left" Margin="237,143,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelRole" Content="Label" HorizontalAlignment="Left" Margin="173,191,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelPhone" Content="Label" HorizontalAlignment="Left" Margin="163,236,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelAdress"  Content="Label" HorizontalAlignment="Left" Margin="144,292,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelEmail" Content="Label" HorizontalAlignment="Left" Margin="145,340,0,0" VerticalAlignment="Top"/>
-        <Button Content="Назад" Click="ButtonExit_Click" HorizontalAlignment="Left" Margin="666,21,0,0" VerticalAlignment="Top" Height="43" Width="89" FontSize="18"/>
 
+        <Label Name="LabelName" Content="{Binding Name}" HorizontalAlignment="Left" Margin="138,101,0,0" VerticalAlignment="Top"/>
+        <Label Name="LabelDivision" Content="{Binding Division}" HorizontalAlignment="Left" Margin="237,143,0,0" VerticalAlignment="Top"/>
+        <Label Name="LabelRole" Content="{Binding Role}" HorizontalAlignment="Left" Margin="173,191,0,0" VerticalAlignment="Top"/>
+        <Label Name="LabelPhone" Content="{Binding Phone}" HorizontalAlignment="Left" Margin="163,236,0,0" VerticalAlignment="Top"/>
+        <Label Name="LabelAdress" Content="{Binding Address}" HorizontalAlignment="Left" Margin="144,292,0,0" VerticalAlignment="Top"/>
+        <Label Name="LabelEmail" Content="{Binding Email}" HorizontalAlignment="Left" Margin="145,340,0,0" VerticalAlignment="Top"/>
+
+        <Button Command="{Binding BackCommand}" Content="Назад" 
+                HorizontalAlignment="Left" Margin="666,21,0,0" 
+                VerticalAlignment="Top" Height="43" Width="89" FontSize="18"/>
     </Grid>
 </Window>
