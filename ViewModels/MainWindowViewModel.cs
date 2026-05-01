@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -48,7 +49,7 @@ namespace AISDisciplineDesc.ViewModels
 
                 if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
                 {
-                    MessageBox.Show("Заполните все поля!");
+                    WpfMessageBox.Show("Заполните все поля!");
                     return;
                 }
 
@@ -57,21 +58,21 @@ namespace AISDisciplineDesc.ViewModels
                 {
                     if (AppState.CurrentUser.role == "admin")
                     {
-                        MessageBox.Show("Вы авторизованы как администратор");
+                        WpfMessageBox.Show("Вы авторизованы как администратор");
                         AdminPanel admin = new AdminPanel();
                         admin.Show();
                         _owner.Hide();
                     }
                     else if (AppState.CurrentUser.role == "Командир части")
                     {
-                        MessageBox.Show("Вы авторизованы как командир части");
+                        WpfMessageBox.Show("Вы авторизованы как командир части");
                         WindowCommander commander = new WindowCommander();
                         commander.Show();
                         _owner.Hide();
                     }
                     else
                     {
-                        MessageBox.Show("Авторизация прошла успешно!");
+                        WpfMessageBox.Show("Авторизация прошла успешно!");
                         WindowNext window = new WindowNext();
                         window.Show();
                         _owner.Hide();
@@ -79,12 +80,12 @@ namespace AISDisciplineDesc.ViewModels
                 }
                 else
                 {
-                    MessageBox.Show("Данного пользователя не существует");
+                    WpfMessageBox.Show("Данного пользователя не существует");
                 }
             }
             catch
             {
-                MessageBox.Show("Ошибка авторизации");
+                WpfMessageBox.Show("Ошибка авторизации");
             }
         }
 

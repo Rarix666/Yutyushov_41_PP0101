@@ -35,7 +35,7 @@
                  VerticalAlignment="Top" Width="165"/>
 
         <Label Content="Описание:" HorizontalAlignment="Left" Margin="53,199,0,0" VerticalAlignment="Top"/>
-        <RichTextBox x:Name="RichTextOrder" Margin="124,199,124,106">
+        <RichTextBox x:Name="RichTextOrder" Margin="124,199,124,174">
             <FlowDocument>
                 <Paragraph>
                     <Run Text=""/>
@@ -43,9 +43,9 @@
             </FlowDocument>
         </RichTextBox>
 
-        <Label Content="Срок исполнения:" HorizontalAlignment="Left" Margin="74,344,0,0" VerticalAlignment="Top"/>
+        <Label Content="Срок исполнения:" HorizontalAlignment="Left" Margin="76,300,0,0" VerticalAlignment="Top"/>
         <TextBox Name="TextDueDate" Text="{Binding DueDate, UpdateSourceTrigger=PropertyChanged}" 
-                 HorizontalAlignment="Left" Margin="186,348,0,0" TextWrapping="Wrap" 
+                 HorizontalAlignment="Left" Margin="188,299,0,0" TextWrapping="Wrap" 
                  VerticalAlignment="Top" Width="120"/>
 
         <Button Command="{Binding CreateOrderCommand}" CommandParameter="{Binding ElementName=RichTextOrder}" 
@@ -54,5 +54,8 @@
 
         <Button Command="{Binding OpenPersonnelCommand}" Content="Личные дела" 
                 HorizontalAlignment="Left" Margin="596,76,0,0" VerticalAlignment="Top" Height="46" Width="149" FontSize="18"/>
+        <Label Content="Файл:" HorizontalAlignment="Left" Margin="505,300,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.861,-0.037"/>
+        <TextBox Name="TxtPdfFile" Text="{Binding PdfFilePath, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Left" Margin="544,299,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button Command="{Binding SelectPdfCommand}" Content="Обзор" HorizontalAlignment="Left" Margin="677,300,0,0" VerticalAlignment="Top" Height="28"/>
     </Grid>
 </Window>

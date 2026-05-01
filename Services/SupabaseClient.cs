@@ -1,18 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using AISDisciplineDesc.Models;
+using BCrypt.Net;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using BCrypt.Net;
-using AISDisciplineDesc.Models;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
 {
@@ -52,6 +57,12 @@ namespace AISDisciplineDesc.Services
                 if (result["id"] == null || result["id"].Type == JTokenType.Null)
                     return false;
 
+                bool? isLocked = result["is_locked"]?.Value<bool>();
+                if (isLocked == true)
+                {
+                    return false; 
+                }
+
                 // Получаем хэш пароля из результата
                 string hashedPassword = result["password_hash"]?.Value<string>();
                 if (string.IsNullOrEmpty(hashedPassword))
@@ -62,19 +73,7 @@ namespace AISDisciplineDesc.Services
                 if (!isValid)
                     return false;
 
-                AppState.CurrentUser = new UserData
-                {
-                    id = result["id"]?.Value<int>() ?? 0,
-                    login = login,
-                    name = result["name"]?.Value<string>(),
-                    email = result["email"]?.Value<string>(),
-                    role = result["role"]?.Value<string>(),
-                    phone = result["phone"]?.Value<string>(),
-                    division = result["division"]?.Value<string>(),
-                    address = result["address"]?.Value<string>(),
-                    unit = result["unit"]?.Value<string>(),
-                    avatar_url = result["avatar_url"]?.Value<string>()
-                };
+                AppState.CurrentUser = result.ToObject<UserData>();
                 return true;
             }
             catch (Exception ex)
@@ -136,9 +135,9 @@ namespace AISDisciplineDesc.Services
             return response.IsSuccessful && response.Content == "true";
         }
 
-        public async Task<bool> DeleteUser(int userId)
+        public async Task<bool> DeleteUser(int user_id)
         {
-            var param = new { user_id = userId };
+            var param = new { user_id };
             var request = CreateRequest("rest/v1/rpc/delete_user", Method.Post);
             request.AddJsonBody(param);
             var response = await client.ExecuteAsync(request);
@@ -177,9 +176,9 @@ namespace AISDisciplineDesc.Services
             }
         }
 
-        public async Task<bool> CreateOrder(string cunit, string cdivision, string cdescription, string cname, DateTime cduedate, DateTime cdatedispatch)
+        public async Task<bool> CreateOrder(string cunit, string cdivision, string cdescription, string cname, DateTime cduedate, DateTime cdatedispatch, string cfileUrl = null)
         {
-            var param = new { cunit, cdivision, cdescription, cname, cduedate, cdatedispatch };
+            var param = new { cunit, cdivision, cdescription, cname, cduedate, cdatedispatch, cfile_url = cfileUrl };
             var request = CreateRequest("rest/v1/rpc/create_order", Method.Post);
             request.AddJsonBody(param);
             var response = await client.ExecuteAsync(request);
@@ -201,20 +200,20 @@ namespace AISDisciplineDesc.Services
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
-        public async Task<bool> UpdateUser(int id, string login, string password, string name, string division, string unit, string role)
+        public async Task<bool> UpdateUser(int p_id, string p_login, string p_password, string p_name, string p_division, string p_unit, string p_role)
         {
             try
             {
                 var request = CreateRequest("rest/v1/rpc/update_user", Method.Post);
                 request.AddJsonBody(new
                 {
-                    p_id = id,
-                    p_login = login,
-                    p_password = password, 
-                    p_name = name,
-                    p_division = division,
-                    p_unit = unit,
-                    p_role = role
+                    p_id,
+                    p_login,
+                    p_password, 
+                    p_name,
+                    p_division,
+                    p_unit,
+                    p_role
                 });
                 var response = await client.ExecuteAsync(request);
 
@@ -226,19 +225,99 @@ namespace AISDisciplineDesc.Services
             }
         }
 
-        public async Task<bool> UpdateUserProfile(int userId, string phone, string email, string address, string division)
+        public async Task<bool> UpdateUserProfile(int p_id, string p_phone, string p_email, string p_address, string p_division)
         {
             var request = CreateRequest("/rest/v1/rpc/update_user_profile", Method.Post);
             request.AddJsonBody(new
             {
-                p_id = userId,
-                p_phone = phone ?? "",
-                p_email = email ?? "",
-                p_address = address ?? "",
-                p_division = division ?? ""
+                p_id,
+                p_phone,
+                p_email,
+                p_address,
+                p_division
             });
             var response = await client.ExecuteAsync(request);
             return response.IsSuccessful && response.Content?.ToLower() == "true";
+        }
+
+        public async Task<bool> SetUserLockStatus(int user_id, bool lock_status)
+        {
+            var request = CreateRequest("rest/v1/rpc/toggle_user_lock", Method.Post);
+            request.AddJsonBody(new { user_id, lock_status });
+            var response = await client.ExecuteAsync(request);
+            return response.IsSuccessful && response.Content?.ToLower() == "true";
+        }
+
+        // -------Работа с PDF--------
+
+        public async Task<string> UploadDocumentFile(string localFilePath, string bucketName = "documents")
+        {
+            try
+            {
+                var baseUrl = BaseURL.TrimEnd('/');
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(localFilePath)}";
+                var url = $"{baseUrl}/storage/v1/object/{bucketName}/{fileName}";
+
+                var fileBytes = await File.ReadAllBytesAsync(localFilePath);
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Add("apikey", APIkey);
+                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {APIkey}");
+
+                    using (var content = new ByteArrayContent(fileBytes))
+                    {
+                        content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+                        var response = await httpClient.PostAsync(url, content);
+                        var responseBody = await response.Content.ReadAsStringAsync();
+
+                        if (response.IsSuccessStatusCode)
+                            return $"{baseUrl}/storage/v1/object/public/{bucketName}/{fileName}";
+
+                        WpfMessageBox.Show($"Upload failed: {response.StatusCode}\n{responseBody}", "Ошибка загрузки PDF");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WpfMessageBox.Show($"Исключение:\n{ex.Message}");
+                return null;
+            }
+        }
+        public async Task<string> UploadDocumentFile(byte[] fileData, string fileName, string bucketName = "documents")
+        {
+            try
+            {
+                var baseUrl = BaseURL.TrimEnd('/');
+                var url = $"{baseUrl}/storage/v1/object/{bucketName}/{fileName}";
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.DefaultRequestHeaders.Add("apikey", APIkey);
+                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {APIkey}");
+
+                    // Content-Type лучше оставить application/pdf, если файл всё равно PDF (даже зашифрованный)
+                    // Supabase не проверяет содержимое, можно оставить application/octet-stream
+                    using (var content = new ByteArrayContent(fileData))
+                    {
+                        content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+                        var response = await httpClient.PostAsync(url, content);
+                        var responseBody = await response.Content.ReadAsStringAsync();
+
+                        if (response.IsSuccessStatusCode)
+                            return $"{baseUrl}/storage/v1/object/public/{bucketName}/{fileName}";
+
+                        WpfMessageBox.Show($"Upload failed: {response.StatusCode}\n{responseBody}", "Ошибка загрузки PDF");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WpfMessageBox.Show($"Исключение: {ex.Message}");
+                return null;
+            }
         }
     }
 }

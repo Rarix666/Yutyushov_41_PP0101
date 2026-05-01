@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfMessageBox = System.Windows.MessageBox;
+using WpfApplication = System.Windows.Application;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -63,7 +65,7 @@ namespace AISDisciplineDesc.ViewModels
                 bool success = await _supabase.DocsInformation();
                 if (!success || AppState.Documentation == null)
                 {
-                    MessageBox.Show("Ошибка загрузки данных");
+                    WpfMessageBox.Show("Ошибка загрузки данных");
                     return;
                 }
 
@@ -78,7 +80,8 @@ namespace AISDisciplineDesc.ViewModels
                         DateDispatch = w.DateDispatch,
                         DueDate = w.DueDate,
                         Status = w.Status,
-                        Description = w.Description
+                        Description = w.Description,
+                        file_url = w.file_url
                     })
                     .ToList();
 
@@ -88,7 +91,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}");
+                WpfMessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
 
@@ -96,11 +99,11 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (document == null)
             {
-                MessageBox.Show("Выберите приказ для обновления.", "Внимание");
+                WpfMessageBox.Show("Выберите приказ для обновления.", "Внимание");
                 return;
             }
 
-            var result = MessageBox.Show($"Обновить статус документа {document.Name}?",
+            var result = WpfMessageBox.Show($"Обновить статус документа {document.Name}?",
                                          "Подтверждение обновления статуса",
                                          MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes)
@@ -109,12 +112,12 @@ namespace AISDisciplineDesc.ViewModels
             bool success = await _supabase.UpdateStatusOrder(document.id, "Выполнено");
             if (success)
             {
-                MessageBox.Show("Статус обновлён");
+                WpfMessageBox.Show("Статус обновлён");
                 await LoadDocumentsAsync();
             }
             else
             {
-                MessageBox.Show("Ошибка при обновлении.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                WpfMessageBox.Show("Ошибка при обновлении.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -123,7 +126,7 @@ namespace AISDisciplineDesc.ViewModels
             Profile profile = new Profile();
             profile.Show();
             
-            var current = Application.Current.Windows.OfType<WindowNext>().FirstOrDefault();
+            var current = WpfApplication.Current.Windows.OfType<WindowNext>().FirstOrDefault();
             current?.Close();
         }
 
@@ -132,7 +135,7 @@ namespace AISDisciplineDesc.ViewModels
             MainWindow main = new MainWindow();
             main.Show();
 
-            var current = Application.Current.Windows.OfType<WindowNext>().FirstOrDefault();
+            var current = WpfApplication.Current.Windows.OfType<WindowNext>().FirstOrDefault();
             current?.Close();
         }
 
@@ -140,12 +143,12 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (documents == null)
             {
-                MessageBox.Show("Не выбрана запись для открытия.", "Ошибка");
+                WpfMessageBox.Show("Не выбрана запись для открытия.", "Ошибка");
                 return;
             }
 
             var detailWindow = new DescriptionOrder(documents);
-            detailWindow.Owner = Application.Current.Windows[0] as Window;
+            detailWindow.Owner = WpfApplication.Current.Windows[0] as Window;
             detailWindow.ShowDialog();
         }
     }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -33,7 +34,6 @@ namespace AISDisciplineDesc.ViewModels
             {
                 if (SetProperty(ref _selectedDivision, value))
                 {
-                    // При смене подразделения обновляем список документов
                     _ = LoadDocumentsAsync();
                 }
             }
@@ -72,7 +72,6 @@ namespace AISDisciplineDesc.ViewModels
             OpenDocumentCommand = new RelayCommand(OpenDocument, () => SelectedDocument != null);
             BackCommand = new RelayCommand(Back);
 
-            // Загружаем подразделения
             _ = LoadDivisionsAsync();
         }
 
@@ -83,7 +82,6 @@ namespace AISDisciplineDesc.ViewModels
             foreach (var div in AppState.divisions)
                 Divisions.Add(div);
 
-            // Если есть подразделения, выбираем первое для автоматической загрузки документов
             if (Divisions.Any())
                 SelectedDivision = Divisions.First();
         }
@@ -92,17 +90,17 @@ namespace AISDisciplineDesc.ViewModels
         {
             try
             {
-                // Если подразделение не выбрано – очищаем список
                 if (SelectedDivision == null)
                 {
                     Documents.Clear();
                     return;
                 }
 
+                await Task.Delay(200);
                 bool success = await _supabase.DocsInformation();
                 if (!success || AppState.Documentation == null)
                 {
-                    MessageBox.Show("Ошибка загрузки данных");
+                    WpfMessageBox.Show("Ошибка загрузки данных");
                     return;
                 }
 
@@ -114,7 +112,8 @@ namespace AISDisciplineDesc.ViewModels
                         DateDispatch = w.DateDispatch,
                         DueDate = w.DueDate,
                         Status = w.Status,
-                        Description = w.Description
+                        Description = w.Description,
+                        file_url = w.file_url
                     })
                     .ToList();
 
@@ -124,7 +123,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}");
+                WpfMessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
 
@@ -132,7 +131,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (SelectedDocument == null)
             {
-                MessageBox.Show("Не выбрана запись для открытия.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                WpfMessageBox.Show("Не выбрана запись для открытия.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

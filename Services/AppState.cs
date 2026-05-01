@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
 {
@@ -16,6 +18,7 @@ namespace AISDisciplineDesc.Services
         public static List<AdminData> AdminDataUsers { get; set; }
         public static List<Divisions> divisions { get; set; }
         public static List<Units> units { get; set; }
+        public static EncryptionService Encryption { get; set; }
         public static async Task LoadDivisionsAsync() // Общий метод загрузки подразделений
         {
             try
@@ -25,14 +28,14 @@ namespace AISDisciplineDesc.Services
                     bool success = await Supabase.DivInformation();
                     if (!success)
                     {
-                        MessageBox.Show("Ошибка загрузки подразделений");
+                        WpfMessageBox.Show("Ошибка загрузки подразделений");
                         return;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}");
+                WpfMessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
         public static async Task LoadUnitsAsync() // Общий метод загрузки частей
@@ -44,14 +47,14 @@ namespace AISDisciplineDesc.Services
                     bool success = await Supabase.UnitInformation();
                     if (!success)
                     {
-                        MessageBox.Show("Ошибка загрузки подразделений");
+                        WpfMessageBox.Show("Ошибка загрузки подразделений");
                         return;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}");
+                WpfMessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
     }

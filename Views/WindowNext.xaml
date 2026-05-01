@@ -45,6 +45,7 @@
                     <MenuItem Header="Выполнено" 
                               Command="{Binding UpdateStatusCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>
+                    <Separator />
                     <MenuItem Header="Открыть" 
                               Command="{Binding OpenOrderCommand}"
                               CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.SelectedItem}"/>

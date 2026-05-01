@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using WpfRichTextBox = System.Windows.Controls.RichTextBox;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -50,12 +52,20 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _dueDate, value);
         }
 
+        private string _pdfFilePath;
+        public string PdfFilePath
+        {
+            get => _pdfFilePath;
+            set => SetProperty(ref _pdfFilePath, value);
+        }
+
         public AsyncRelayCommand LoadDivisionsCommand { get; }
         public AsyncRelayCommand<object> CreateOrderCommand { get; }
         public RelayCommand OpenProfileCommand { get; }
         public RelayCommand OpenOrdersCommand { get; }
         public RelayCommand OpenPersonnelCommand { get; }
         public RelayCommand ExitCommand { get; }
+        public RelayCommand SelectPdfCommand { get; }
 
         public WindowCommanderViewModel(Window owner)
         {
@@ -68,6 +78,7 @@ namespace AISDisciplineDesc.ViewModels
             OpenOrdersCommand = new RelayCommand(OpenOrders);
             OpenPersonnelCommand = new RelayCommand(OpenPersonnel);
             ExitCommand = new RelayCommand(Exit);
+            SelectPdfCommand = new RelayCommand(SelectPdfFile);
 
             _ = LoadDivisionsAsync();
         }
@@ -82,9 +93,9 @@ namespace AISDisciplineDesc.ViewModels
 
         private async Task ExecuteCreateOrder(object parameter)
         {
-            if (parameter is not RichTextBox richTextBox)
+            if (parameter is not WpfRichTextBox richTextBox)
             {
-                MessageBox.Show("Ошибка получения описания документа");
+                WpfMessageBox.Show("Ошибка получения описания документа");
                 return;
             }
 
@@ -94,34 +105,46 @@ namespace AISDisciplineDesc.ViewModels
             string cdescription = range.Text;
             string cname = OrderName;
             string inputdate = DueDate;
+            string uploadedFileUrl = null;
 
             if (string.IsNullOrWhiteSpace(cunit) || string.IsNullOrWhiteSpace(cdivision) ||
                 string.IsNullOrWhiteSpace(cdescription) || string.IsNullOrWhiteSpace(cname) ||
                 string.IsNullOrWhiteSpace(inputdate))
             {
-                MessageBox.Show("Заполните все поля!");
+                WpfMessageBox.Show("Заполните все поля!");
                 return;
             }
 
             if (!DateTime.TryParseExact(inputdate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime cduedate))
             {
-                MessageBox.Show("Неверный формат даты. Используйте ДД.ММ.ГГГГ");
+                WpfMessageBox.Show("Неверный формат даты. Используйте ДД.ММ.ГГГГ");
                 return;
             }
             DateTime cdatedispatch = DateTime.Now;
 
-            bool result = await _supabase.CreateOrder(cunit, cdivision, cdescription, cname, cduedate, cdatedispatch);
+            if (!string.IsNullOrEmpty(PdfFilePath))
+            {
+                uploadedFileUrl = await _supabase.UploadDocumentFile(PdfFilePath);
+                if (uploadedFileUrl == null)
+                {
+                    WpfMessageBox.Show("Не удалось загрузить PDF-файл. Проверьте подключение и настройки бакета.");
+                    return;
+                }
+            }
+
+            bool result = await _supabase.CreateOrder(cunit, cdivision, cdescription, cname, cduedate, cdatedispatch, uploadedFileUrl);
             if (result)
             {
-                MessageBox.Show("Приказ отправлен");
+                WpfMessageBox.Show("Приказ отправлен");
                 OrderName = "";
                 DueDate = "";
+                PdfFilePath = "";
                 richTextBox.Document.Blocks.Clear();
                 SelectedDivision = null;
             }
             else
             {
-                MessageBox.Show("Ошибка отправления");
+                WpfMessageBox.Show("Ошибка отправления");
             }
         }
 
@@ -151,6 +174,16 @@ namespace AISDisciplineDesc.ViewModels
             MainWindow main = new MainWindow();
             main.Show();
             _owner.Close();
+        }
+
+        private void SelectPdfFile()
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.Filter = "PDF files (*.pdf)|*.pdf";
+            if (dialog.ShowDialog() == true)
+            {
+                PdfFilePath = dialog.FileName;
+            }
         }
     }
 }

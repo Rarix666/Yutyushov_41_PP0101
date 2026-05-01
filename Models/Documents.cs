@@ -16,5 +16,6 @@ namespace AISDisciplineDesc.Models
         public string Status { get; set; }
         public string Division { get; set; }
         public string unit { get; set; }
+        public string file_url { get; set; }
     }
 }

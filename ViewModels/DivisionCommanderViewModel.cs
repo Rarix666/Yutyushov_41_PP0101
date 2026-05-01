@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -104,7 +105,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки: {ex.Message}");
+                WpfMessageBox.Show($"Ошибка загрузки: {ex.Message}");
             }
         }
 
@@ -112,7 +113,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (SelectedPersonnel == null)
             {
-                MessageBox.Show("Выберите сотрудника для обновления.");
+                WpfMessageBox.Show("Выберите сотрудника для обновления.");
                 return;
             }
 
@@ -133,13 +134,13 @@ namespace AISDisciplineDesc.ViewModels
                 int index = PersonnelList.IndexOf(SelectedPersonnel);
                 if (index >= 0)
                     PersonnelList[index] = SelectedPersonnel;
-                MessageBox.Show("Данные обновлены.");
+                WpfMessageBox.Show("Данные обновлены.");
                 SelectedPersonnel = null;
                 ClearForm();
             }
             else
             {
-                MessageBox.Show("Ошибка обновления.");
+                WpfMessageBox.Show("Ошибка обновления.");
             }
         }
 

@@ -15,5 +15,8 @@ namespace AISDisciplineDesc.Models
         public string name { get; set; }
         public string unit { get; set; }
         public string division { get; set; }
+        public bool is_locked { get; set; }
+
+        public string StatusText => is_locked ? "Заблокирован" : "Активен";
     }
 }

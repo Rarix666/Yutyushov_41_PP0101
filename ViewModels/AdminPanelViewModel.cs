@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -16,6 +17,9 @@ namespace AISDisciplineDesc.ViewModels
     {
         private readonly SupabaseClient _supabase = AppState.Supabase;
         private readonly Window _owner;
+        public AsyncRelayCommand LockCommand { get; }
+        public AsyncRelayCommand UnlockCommand { get; }
+
         public string AdminName => AppState.CurrentUser?.name ?? "";
 
         private ObservableCollection<AdminData> _users;
@@ -43,6 +47,7 @@ namespace AISDisciplineDesc.ViewModels
                         if (Units != null)
                             SelectedUnit = Units.FirstOrDefault(u => u.number == value.unit);
                         Password = "";
+                        UpdateLockVisibility();
                     }
                     else
                     {
@@ -126,9 +131,67 @@ namespace AISDisciplineDesc.ViewModels
             DeleteCommand = new AsyncRelayCommand(DeleteUserAsync);
             ExitCommand = new RelayCommand(Exit);
             ClearSelectionCommand = new RelayCommand(ClearSelection);
+            LockCommand = new AsyncRelayCommand(LockUserAsync, () => SelectedUser != null && !SelectedUser.is_locked);
+            UnlockCommand = new AsyncRelayCommand(UnlockUserAsync, () => SelectedUser != null && SelectedUser.is_locked);
 
             _ = LoadReferencesAsync();
             _ = LoadUsersAsync();
+        }
+
+        private Visibility _showLock = Visibility.Collapsed;
+        public Visibility ShowLock
+        {
+            get => _showLock;
+            set => SetProperty(ref _showLock, value);
+        }
+
+        private Visibility _showUnlock = Visibility.Collapsed;
+        public Visibility ShowUnlock
+        {
+            get => _showUnlock;
+            set => SetProperty(ref _showUnlock, value);
+        }
+
+        private async Task LockUserAsync()
+        {
+            if (SelectedUser == null) return;
+            bool success = await _supabase.SetUserLockStatus(SelectedUser.id, true);
+            if (success)
+            {
+                SelectedUser.is_locked = true;
+                await LoadUsersAsync();
+                UpdateLockVisibility();
+                WpfMessageBox.Show("Пользователь заблокирован.");
+            }
+            else WpfMessageBox.Show("Ошибка блокировки.");
+        }
+
+        private async Task UnlockUserAsync()
+        {
+            if (SelectedUser == null) return;
+            bool success = await _supabase.SetUserLockStatus(SelectedUser.id, false);
+            if (success)
+            {
+                SelectedUser.is_locked = false;
+                await LoadUsersAsync();
+                UpdateLockVisibility();
+                WpfMessageBox.Show("Пользователь разблокирован.");
+            }
+            else WpfMessageBox.Show("Ошибка разблокировки.");
+        }
+
+        private void UpdateLockVisibility()
+        {
+            if (SelectedUser != null)
+            {
+                ShowLock = SelectedUser.is_locked ? Visibility.Collapsed : Visibility.Visible;
+                ShowUnlock = SelectedUser.is_locked ? Visibility.Visible : Visibility.Collapsed;
+            }
+            else
+            {
+                ShowLock = Visibility.Collapsed;
+                ShowUnlock = Visibility.Collapsed;
+            }
         }
 
         private async Task LoadReferencesAsync()
@@ -148,10 +211,11 @@ namespace AISDisciplineDesc.ViewModels
         {
             try
             {
+                await Task.Delay(200);
                 bool success = await _supabase.AdminInformation();
                 if (!success || AppState.AdminDataUsers == null)
                 {
-                    MessageBox.Show("Ошибка загрузки данных");
+                    WpfMessageBox.Show("Ошибка загрузки данных");
                     return;
                 }
 
@@ -165,7 +229,8 @@ namespace AISDisciplineDesc.ViewModels
                         login = w.login,
                         name = w.name,
                         division = w.division,
-                        unit = w.unit
+                        unit = w.unit,
+                        is_locked = w.is_locked
                     })
                     .ToList();
 
@@ -175,7 +240,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}");
+                WpfMessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
 
@@ -185,7 +250,7 @@ namespace AISDisciplineDesc.ViewModels
                 string.IsNullOrWhiteSpace(Name) || SelectedDivision == null ||
                 SelectedUnit == null || string.IsNullOrWhiteSpace(SelectedRole))
             {
-                MessageBox.Show("Заполните все поля!");
+                WpfMessageBox.Show("Заполните все поля!");
                 return;
             }
 
@@ -197,13 +262,13 @@ namespace AISDisciplineDesc.ViewModels
             {
                 // обновление существующего
                 result = await _supabase.UpdateUser(SelectedUser.id, Login, Password, Name, divisionName, unitNumber, SelectedRole);
-                if (result) MessageBox.Show("Пользователь обновлён!");
+                if (result) WpfMessageBox.Show("Пользователь обновлён!");
             }
             else
             {
                 // добавление нового
                 result = await _supabase.CreateUser(Login, Password, Name, divisionName, unitNumber, SelectedRole);
-                if (result) MessageBox.Show("Пользователь успешно добавлен!");
+                if (result) WpfMessageBox.Show("Пользователь успешно добавлен!");
             }
 
             if (result)
@@ -214,7 +279,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             else
             {
-                MessageBox.Show(SelectedUser != null ? "Ошибка при обновлении." : "Такой пользователь уже существует.");
+                WpfMessageBox.Show(SelectedUser != null ? "Ошибка при обновлении." : "Такой пользователь уже существует.");
             }
         }
 
@@ -222,11 +287,11 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (SelectedUser == null)
             {
-                MessageBox.Show("Выберите пользователя для удаления.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                WpfMessageBox.Show("Выберите пользователя для удаления.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var result = MessageBox.Show($"Удалить пользователя {SelectedUser.login} (ID: {SelectedUser.id})?",
+            var result = WpfMessageBox.Show($"Удалить пользователя {SelectedUser.login} (ID: {SelectedUser.id})?",
                                          "Подтверждение удаления",
                                          MessageBoxButton.YesNo,
                                          MessageBoxImage.Question);
@@ -236,14 +301,14 @@ namespace AISDisciplineDesc.ViewModels
             bool success = await _supabase.DeleteUser(SelectedUser.id);
             if (success)
             {
-                MessageBox.Show("Пользователь удалён.");
+                WpfMessageBox.Show("Пользователь удалён.");
                 await LoadUsersAsync();
                 ClearForm();
                 SelectedUser = null;
             }
             else
             {
-                MessageBox.Show("Ошибка при удалении пользователя.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                WpfMessageBox.Show("Ошибка при удалении пользователя.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
