@@ -10,7 +10,7 @@ namespace AISDisciplineDesc.Services
 {
     internal class EncryptionService
     {
-        private readonly byte[] _key; // 32 байта для AES-256
+        private readonly byte[] _key; 
 
         public EncryptionService(byte[] key)
         {

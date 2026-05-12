@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using AISDisciplineDesc.Core;
 using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
@@ -14,11 +15,13 @@ namespace AISDisciplineDesc.Services
     {
         public static SupabaseClient Supabase { get; set; }
         public static UserData CurrentUser { get; set; }
+        public static LoggerService Logger { get; set; }
         public static List<Documents> Documentation { get; set; }
         public static List<AdminData> AdminDataUsers { get; set; }
         public static List<Divisions> divisions { get; set; }
         public static List<Units> units { get; set; }
-        public static EncryptionService Encryption { get; set; }
+        public static UsbAuthService UsbAuth { get; set; }
+        public static EncryptionService Encryption { get; set; } = new EncryptionService(Secrets.DocumentKey);
         public static async Task LoadDivisionsAsync() // Общий метод загрузки подразделений
         {
             try
@@ -56,6 +59,11 @@ namespace AISDisciplineDesc.Services
             {
                 WpfMessageBox.Show($"Ошибка: {ex.Message}");
             }
+        }
+
+        public static void InitializeUsbAuth()
+        {
+            UsbAuth = new UsbAuthService(Secrets.FlashKey);
         }
     }
 }

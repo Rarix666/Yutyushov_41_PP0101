@@ -1,5 +1,6 @@
 ﻿using AISDisciplineDesc.Core;
 using AISDisciplineDesc.Models;
+using AISDisciplineDesc.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,8 +72,16 @@ namespace AISDisciplineDesc.ViewModels
             try
             {
                 using var httpClient = new HttpClient();
-                var bytes = await httpClient.GetByteArrayAsync(url);
-                PdfData = bytes;
+                var rawBytes = await httpClient.GetByteArrayAsync(url);
+
+                try
+                {
+                    PdfData = AppState.Encryption.Decrypt(rawBytes);
+                }
+                catch
+                {
+                    PdfData = rawBytes;
+                }
             }
             catch (Exception ex)
             {

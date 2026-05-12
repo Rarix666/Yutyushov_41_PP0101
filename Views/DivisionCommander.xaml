@@ -73,7 +73,7 @@
                                 Width="100" Height="35" Margin="0,0,15,0"/>
                         <Button Command="{Binding ClearCommand}" Content="Очистить" 
                                 Width="100" Height="35" Margin="0,0,15,0"/>
-                        <Button Command="{Binding CloseCommand}" Content="Закрыть" 
+                        <Button Background="#b80707" Command="{Binding CloseCommand}" Content="Выйти" 
                                 Width="100" Height="35"/>
                     </StackPanel>
                 </Grid>

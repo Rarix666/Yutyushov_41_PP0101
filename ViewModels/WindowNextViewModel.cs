@@ -18,6 +18,9 @@ namespace AISDisciplineDesc.ViewModels
         private readonly SupabaseClient _supabase = AppState.Supabase;
 
         private ObservableCollection<Documents> _documents;
+
+        public string UserName => AppState.CurrentUser.name ?? "Личное дело";
+
         public ObservableCollection<Documents> Documents
         {
             get => _documents;
@@ -72,7 +75,7 @@ namespace AISDisciplineDesc.ViewModels
                 var docs = AppState.Documentation
                     .Where(w => w.Division == AppState.CurrentUser.division &&
                                 w.unit == AppState.CurrentUser.unit &&
-                                w.Status != "Выполнено")
+                                w.Status != "Выполнено" && w.Status != "Просрочено")
                     .Select(w => new Documents
                     {
                         id = w.id,

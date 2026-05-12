@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using WpfRichTextBox = System.Windows.Controls.RichTextBox;
 using WpfMessageBox = System.Windows.MessageBox;
+using System.IO;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -45,18 +46,26 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _orderName, value);
         }
 
-        private string _dueDate;
-        public string DueDate
+        private DateTime? _dueDate;
+        public DateTime? DueDate
         {
             get => _dueDate;
             set => SetProperty(ref _dueDate, value);
         }
+        public DateTime MinDueDate => DateTime.Today;
 
         private string _pdfFilePath;
         public string PdfFilePath
         {
             get => _pdfFilePath;
             set => SetProperty(ref _pdfFilePath, value);
+        }
+
+        private string? _avatarUrl;
+        public string? AvatarUrl
+        {
+            get => _avatarUrl;
+            set => SetProperty(ref _avatarUrl, value);
         }
 
         public AsyncRelayCommand LoadDivisionsCommand { get; }
@@ -71,6 +80,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             _owner = owner;
             Divisions = new ObservableCollection<dynamic>();
+            AvatarUrl = AppState.CurrentUser?.avatar_url;
 
             LoadDivisionsCommand = new AsyncRelayCommand(LoadDivisionsAsync);
             CreateOrderCommand = new AsyncRelayCommand<object>(ExecuteCreateOrder);
@@ -104,27 +114,34 @@ namespace AISDisciplineDesc.ViewModels
             TextRange range = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
             string cdescription = range.Text;
             string cname = OrderName;
-            string inputdate = DueDate;
             string uploadedFileUrl = null;
 
             if (string.IsNullOrWhiteSpace(cunit) || string.IsNullOrWhiteSpace(cdivision) ||
-                string.IsNullOrWhiteSpace(cdescription) || string.IsNullOrWhiteSpace(cname) ||
-                string.IsNullOrWhiteSpace(inputdate))
+                string.IsNullOrWhiteSpace(cdescription) || string.IsNullOrWhiteSpace(cname))
             {
                 WpfMessageBox.Show("Заполните все поля!");
                 return;
             }
 
-            if (!DateTime.TryParseExact(inputdate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime cduedate))
+            if (!DueDate.HasValue)
             {
-                WpfMessageBox.Show("Неверный формат даты. Используйте ДД.ММ.ГГГГ");
+                WpfMessageBox.Show("Укажите срок исполнения.");
                 return;
             }
+
+            DateTime cduedate = DueDate.Value;
             DateTime cdatedispatch = DateTime.Now;
 
             if (!string.IsNullOrEmpty(PdfFilePath))
             {
-                uploadedFileUrl = await _supabase.UploadDocumentFile(PdfFilePath);
+                // Читаем исходный PDF
+                byte[] originalPdf = await File.ReadAllBytesAsync(PdfFilePath);
+                // Шифруем общим ключом
+                byte[] encryptedPdf = AppState.Encryption.Encrypt(originalPdf);
+                // Генерируем уникальное имя файла
+                string fileName = Guid.NewGuid().ToString() + ".pdf";
+                // Загружаем зашифрованные данные (используем вторую перегрузку)
+                uploadedFileUrl = await _supabase.UploadDocumentFile(encryptedPdf, fileName);
                 if (uploadedFileUrl == null)
                 {
                     WpfMessageBox.Show("Не удалось загрузить PDF-файл. Проверьте подключение и настройки бакета.");
@@ -137,7 +154,7 @@ namespace AISDisciplineDesc.ViewModels
             {
                 WpfMessageBox.Show("Приказ отправлен");
                 OrderName = "";
-                DueDate = "";
+                DueDate = null;
                 PdfFilePath = "";
                 richTextBox.Document.Blocks.Clear();
                 SelectedDivision = null;

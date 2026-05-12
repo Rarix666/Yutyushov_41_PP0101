@@ -82,7 +82,7 @@ namespace AISDisciplineDesc.Services
             }
         }
 
-        public async Task<bool> DocsInformation() //Метод необходимый для заполнения datagrid
+        public async Task<bool> DocsInformation() //Метод необходимый для заполнения datagrid с документами
         {
             var request = CreateRequest("/rest/v1/rpc/info_documents_for_lead");
             var response = await client.ExecuteAsync(request);
@@ -98,7 +98,7 @@ namespace AISDisciplineDesc.Services
             }
         }
 
-        public async Task<bool> AdminInformation() //Метод необходимый для заполнения datagrid
+        public async Task<bool> AdminInformation() //Метод необходимый для заполнения datagrid администратора
         {
             var request = CreateRequest("/rest/v1/rpc/all_data_users");
             var response = await client.ExecuteAsync(request);
@@ -114,26 +114,26 @@ namespace AISDisciplineDesc.Services
             }
         }
 
-        public async Task<List<PersonnelData>> GetPersonnelList()
+        public async Task<List<PersonnelData>> GetPersonnelList() //Метод для получения всех данных командиров подразделений
         {
             var request = CreateRequest("/rest/v1/rpc/get_all_users", Method.Post);
-            request.AddJsonBody(new { }); // пустой объект, так как функция не требует параметров
+            request.AddJsonBody(new { });
             var response = await client.ExecuteAsync(request);
             if (!response.IsSuccessful) return new List<PersonnelData>();
             return JsonConvert.DeserializeObject<List<PersonnelData>>(response.Content);
         }
 
-        public async Task<bool> CreateUser(string clogin, string cpassword, string cname, string cdivision, string cunit, string crole)
+        public async Task<bool> CreateUser(string clogin, string cpassword, string cname, string cdivision, string cunit, string crole, string cflash_serial)
         {
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(cpassword);
-            var param = new { clogin, cpassword = hashedPassword, cname, cdivision, cunit, crole };
+            var param = new { clogin, cpassword = hashedPassword, cname, cdivision, cunit, crole, cflash_serial };
             var request = CreateRequest("rest/v1/rpc/create_users", Method.Post);
             request.AddJsonBody(param);
             var response = await client.ExecuteAsync(request);
 
             return response.IsSuccessful && response.Content == "true";
-        }
+        } //Функция добавления нового пользователя с хэшированием паролей
 
         public async Task<bool> DeleteUser(int user_id)
         {
@@ -142,7 +142,7 @@ namespace AISDisciplineDesc.Services
             request.AddJsonBody(param);
             var response = await client.ExecuteAsync(request);
             return response.IsSuccessful && response.Content == "true";
-        }
+        } //Функция удаления аккаунтов пользователей
 
         public async Task<bool> DivInformation() //Метод необходимый для заполнения combobox подразделений
         {
@@ -174,7 +174,7 @@ namespace AISDisciplineDesc.Services
             {
                 return false;
             }
-        }
+        } //Метод необходимый для заполнения combobox частей
 
         public async Task<bool> CreateOrder(string cunit, string cdivision, string cdescription, string cname, DateTime cduedate, DateTime cdatedispatch, string cfileUrl = null)
         {
@@ -189,7 +189,7 @@ namespace AISDisciplineDesc.Services
             }
 
             return response.StatusCode == System.Net.HttpStatusCode.OK && response.Content == "true";
-        }
+        } //Функция добавления приказа
 
         public async Task<bool> UpdateStatusOrder(int upid, string upstatus) //Метод обновления данных о статусе приказов
         {
@@ -200,7 +200,7 @@ namespace AISDisciplineDesc.Services
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
-        public async Task<bool> UpdateUser(int p_id, string p_login, string p_password, string p_name, string p_division, string p_unit, string p_role)
+        public async Task<bool> UpdateUser(int p_id, string p_login, string p_password, string p_name, string p_division, string p_unit, string p_role, string p_flash_serial)
         {
             try
             {
@@ -213,7 +213,8 @@ namespace AISDisciplineDesc.Services
                     p_name,
                     p_division,
                     p_unit,
-                    p_role
+                    p_role,
+                    p_flash_serial
                 });
                 var response = await client.ExecuteAsync(request);
 
@@ -223,7 +224,7 @@ namespace AISDisciplineDesc.Services
             {
                 return false;
             }
-        }
+        } //Функция обновления данных пользователей
 
         public async Task<bool> UpdateUserProfile(int p_id, string p_phone, string p_email, string p_address, string p_division)
         {
@@ -238,7 +239,7 @@ namespace AISDisciplineDesc.Services
             });
             var response = await client.ExecuteAsync(request);
             return response.IsSuccessful && response.Content?.ToLower() == "true";
-        }
+        } //Функция обновления личных данных командирова подразделений
 
         public async Task<bool> SetUserLockStatus(int user_id, bool lock_status)
         {
@@ -246,7 +247,60 @@ namespace AISDisciplineDesc.Services
             request.AddJsonBody(new { user_id, lock_status });
             var response = await client.ExecuteAsync(request);
             return response.IsSuccessful && response.Content?.ToLower() == "true";
+        } //Функция блокировки/разблокировки аккаунтов
+
+        public async Task UpdateOverdueDocumentsAsync()
+        {
+            var request = CreateRequest("rest/v1/rpc/update_overdue_documents", Method.Post);
+            await client.ExecuteAsync(request);
         }
+
+        // -------Работа с логами--------
+
+        public async Task InsertLog(string _level, string _message, string _user_login, string _machine_name, string _app_version)
+        {
+            var request = CreateRequest("rest/v1/rpc/insert_log", Method.Post);
+            request.AddJsonBody(new
+            {
+                _level,
+                _message,
+                _user_login,
+                _machine_name,
+                _app_version
+            });
+            await client.ExecuteAsync(request);
+        } //Функция логирования
+
+        public async Task<(List<LogEntry> Logs, int TotalCount)> GetLogsAsync(int p_page, int p_page_size, DateTime? p_from_date = null, DateTime? p_to_date = null, string level = null, string search = null, string userLogin = null)
+        {
+            try
+            {
+                var request = CreateRequest("/rest/v1/rpc/get_logs", Method.Post);
+                request.AddJsonBody(new
+                {
+                    p_page,
+                    p_page_size,
+                    p_from_date,
+                    p_to_date,
+                    p_level = string.IsNullOrEmpty(level) ? null : level,
+                    p_search = string.IsNullOrEmpty(search) ? null : search,
+                    p_user_login = string.IsNullOrEmpty(userLogin) ? null : userLogin
+                });
+                var response = await client.ExecuteAsync(request);
+                if (!response.IsSuccessful || string.IsNullOrEmpty(response.Content))
+                    return (new List<LogEntry>(), 0);
+
+                var result = JObject.Parse(response.Content);
+                var logs = result["logs"]?.ToObject<List<LogEntry>>() ?? new List<LogEntry>();
+                var total = result["totalCount"]?.Value<int>() ?? 0;
+                return (logs, total);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"GetLogsAsync error: {ex.Message}");
+                return (new List<LogEntry>(), 0);
+            }
+        } //Функция вывода логов
 
         // -------Работа с PDF--------
 
@@ -284,7 +338,7 @@ namespace AISDisciplineDesc.Services
                 WpfMessageBox.Show($"Исключение:\n{ex.Message}");
                 return null;
             }
-        }
+        } //Функция для отображения незашифрованных документов
         public async Task<string> UploadDocumentFile(byte[] fileData, string fileName, string bucketName = "documents")
         {
             try
@@ -297,11 +351,9 @@ namespace AISDisciplineDesc.Services
                     httpClient.DefaultRequestHeaders.Add("apikey", APIkey);
                     httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {APIkey}");
 
-                    // Content-Type лучше оставить application/pdf, если файл всё равно PDF (даже зашифрованный)
-                    // Supabase не проверяет содержимое, можно оставить application/octet-stream
                     using (var content = new ByteArrayContent(fileData))
                     {
-                        content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+                        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
                         var response = await httpClient.PostAsync(url, content);
                         var responseBody = await response.Content.ReadAsStringAsync();
 
@@ -318,6 +370,6 @@ namespace AISDisciplineDesc.Services
                 WpfMessageBox.Show($"Исключение: {ex.Message}");
                 return null;
             }
-        }
+        } //Функция для отображения зашифрованных документов
     }
 }

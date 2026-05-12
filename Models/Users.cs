@@ -18,6 +18,7 @@ namespace AISDisciplineDesc.Models
         public string address { get; set; }
         public string unit { get; set; }
         public string avatar_url { get; set; }
+        public string flash_serial { get; set; }
 
     }
 

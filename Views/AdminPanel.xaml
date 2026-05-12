@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:AISDisciplineDesc"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Администратор" Height="450" Width="800">
-    <Grid>
+        Title="Администратор" Height="450" Width="1000">
+    <Grid Cursor="">
         <Label Content="Администратор:" HorizontalAlignment="Left" Margin="51,29,0,0" VerticalAlignment="Top" FontSize="24"/>
         <Label Name="LabelNameAdmin" Content="{Binding AdminName}" HorizontalAlignment="Left" Margin="244,29,0,0" VerticalAlignment="Top" FontSize="24"/>
 
@@ -68,6 +68,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
+                <DataGridTextColumn Header="Ключ" 
+                    Binding="{Binding flash_serial}" 
+                    Width="Auto" 
+                    IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Статус" 
                                     Binding="{Binding StatusText}" 
                                     Width="Auto" 
@@ -80,12 +90,13 @@
         <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="24,188,0,0" VerticalAlignment="Top"/>
         <Label Content="Часть:" HorizontalAlignment="Left" Margin="24,219,0,0" VerticalAlignment="Top"/>
         <Label Content="Роль:" HorizontalAlignment="Left" Margin="24,251,0,0" VerticalAlignment="Top"/>
+        <Label Content="Ключ:" HorizontalAlignment="Left" Margin="20,292,0,0" VerticalAlignment="Top"/>
         <TextBox Name="TextLogin" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="73,99,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170"/>
         <TextBox Name="TextPassword" Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="78,130,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165"/>
         <TextBox Name="TextName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="68,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175"/>
-        <Button Command="{Binding SaveCommand}" Content="Сохранить" HorizontalAlignment="Left" Margin="99,299,0,0" VerticalAlignment="Top" Width="110"/>
-        <Button Command="{Binding ExitCommand}" Content="Выйти" HorizontalAlignment="Left" Margin="682,14,0,0" VerticalAlignment="Top" Height="36" Width="95" FontSize="18"/>
-        <ComboBox Name="TextDiv" DisplayMemberPath="name" ItemsSource="{Binding Divisions}" SelectedItem="{Binding SelectedDivision}" HorizontalAlignment="Left" Margin="123,190,0,0" VerticalAlignment="Top" Width="120"/>
+        <Button Command="{Binding SaveCommand}" Content="Сохранить" HorizontalAlignment="Left" Margin="100,376,0,0" VerticalAlignment="Top" Width="110"/>
+        <Button Background="#b80707" Command="{Binding ExitCommand}" Content="Выйти" HorizontalAlignment="Right" Margin="0,14,10,0" VerticalAlignment="Top" Height="36" Width="95" FontSize="18"/>
+        <ComboBox Name="TextDiv" DisplayMemberPath="name" ItemsSource="{Binding Divisions}" SelectedItem="{Binding SelectedDivision}" HorizontalAlignment="Left" Margin="123,190,0,0" VerticalAlignment="Top" Width="120" Cursor=""/>
         <ComboBox Name="TextUnit" DisplayMemberPath="number" ItemsSource="{Binding Units}" SelectedItem="{Binding SelectedUnit}" HorizontalAlignment="Left" Margin="68,221,0,0" VerticalAlignment="Top" Width="175"/>
         <ComboBox Name="TextRole" 
           SelectedValue="{Binding SelectedRole}" SelectedValuePath="Content"
@@ -96,5 +107,27 @@
             <ComboBoxItem Content="Командир подразделения"/>
             <ComboBoxItem Content="Командир части"/>
         </ComboBox>
+        <ComboBox ItemsSource="{Binding FlashDrives}" 
+          SelectedItem="{Binding SelectedFlashDrive}"
+          HorizontalAlignment="Left" Margin="158,292,0,0" VerticalAlignment="Top" Width="90">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock>
+                <Run Text="{Binding DriveLetter}"/>
+                <Run Text=" ("/>
+                <Run Text="{Binding VolumeLabel}"/>
+                <Run Text=")"/>
+                    </TextBlock>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <TextBox x:Name="TextFlashSerial" 
+         Text="{Binding FlashSerial, UpdateSourceTrigger=PropertyChanged}" 
+         HorizontalAlignment="Left" Margin="68,291,0,0" TextWrapping="Wrap" 
+         VerticalAlignment="Top" Width="76"/>
+        <Button Command="{Binding OpenLogsCommand}" Content="Логи" HorizontalAlignment="Right" Margin="0,14,120,0" VerticalAlignment="Top" Height="36" Width="103" FontSize="18"/>
+        <Button Content="Обновить список флешек" Command="{Binding RefreshFlashDrivesCommand}" 
+        HorizontalAlignment="Left" Margin="50,330,0,0" VerticalAlignment="Top" 
+        Width="207" Height="32" ToolTip="Обновить список флешек"/>
     </Grid>
 </Window>

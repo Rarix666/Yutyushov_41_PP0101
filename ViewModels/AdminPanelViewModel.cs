@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,7 +31,7 @@ namespace AISDisciplineDesc.ViewModels
         }
 
         private AdminData _selectedUser;
-        public AdminData SelectedUser
+        public AdminData SelectedUser //Выбор пользователя в DataGrid при помощи мыши
         {
             get => _selectedUser;
             set
@@ -42,6 +43,7 @@ namespace AISDisciplineDesc.ViewModels
                         Login = value.login;
                         Name = value.name;
                         SelectedRole = value.role;
+                        FlashSerial = value.flash_serial;
                         if (Divisions != null)
                             SelectedDivision = Divisions.FirstOrDefault(d => d.name == value.division);
                         if (Units != null)
@@ -113,11 +115,38 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _selectedRole, value);
         }
 
+        private string _selectedFlashSerial;
+        public string FlashSerial
+        {
+            get => _selectedFlashSerial;
+            set => SetProperty(ref _selectedFlashSerial, value);
+        }
+
+        public ObservableCollection<FlashDriveInfo> FlashDrives { get; } = new ObservableCollection<FlashDriveInfo>();
+
+        private FlashDriveInfo _selectedFlashDrive;
+        public FlashDriveInfo SelectedFlashDrive
+        {
+            get => _selectedFlashDrive;
+            set
+            {
+                if (SetProperty(ref _selectedFlashDrive, value))
+                {
+                    if (value != null)
+                    {
+                        FlashSerial = value.SerialNumber;
+                    }
+                }
+            }
+        }
+
         public ICommand LoadUsersCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand ExitCommand { get; }
+        public ICommand OpenLogsCommand { get; }
         public ICommand ClearSelectionCommand { get; }
+        public ICommand RefreshFlashDrivesCommand { get; }
 
         public AdminPanelViewModel(Window owner)
         {
@@ -130,12 +159,15 @@ namespace AISDisciplineDesc.ViewModels
             SaveCommand = new AsyncRelayCommand(SaveUserAsync);
             DeleteCommand = new AsyncRelayCommand(DeleteUserAsync);
             ExitCommand = new RelayCommand(Exit);
+            OpenLogsCommand = new RelayCommand(OpenLogs);
             ClearSelectionCommand = new RelayCommand(ClearSelection);
+            RefreshFlashDrivesCommand = new RelayCommand(RefreshFlashDrives);
             LockCommand = new AsyncRelayCommand(LockUserAsync, () => SelectedUser != null && !SelectedUser.is_locked);
             UnlockCommand = new AsyncRelayCommand(UnlockUserAsync, () => SelectedUser != null && SelectedUser.is_locked);
 
             _ = LoadReferencesAsync();
             _ = LoadUsersAsync();
+            RefreshFlashDrives();
         }
 
         private Visibility _showLock = Visibility.Collapsed;
@@ -158,6 +190,7 @@ namespace AISDisciplineDesc.ViewModels
             bool success = await _supabase.SetUserLockStatus(SelectedUser.id, true);
             if (success)
             {
+                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} заблокировал пользователя {SelectedUser.login}");
                 SelectedUser.is_locked = true;
                 await LoadUsersAsync();
                 UpdateLockVisibility();
@@ -172,6 +205,7 @@ namespace AISDisciplineDesc.ViewModels
             bool success = await _supabase.SetUserLockStatus(SelectedUser.id, false);
             if (success)
             {
+                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} разблокировал пользователя {SelectedUser.login}");
                 SelectedUser.is_locked = false;
                 await LoadUsersAsync();
                 UpdateLockVisibility();
@@ -230,7 +264,8 @@ namespace AISDisciplineDesc.ViewModels
                         name = w.name,
                         division = w.division,
                         unit = w.unit,
-                        is_locked = w.is_locked
+                        is_locked = w.is_locked,
+                        flash_serial = w.flash_serial
                     })
                     .ToList();
 
@@ -240,7 +275,8 @@ namespace AISDisciplineDesc.ViewModels
             }
             catch (Exception ex)
             {
-                WpfMessageBox.Show($"Ошибка: {ex.Message}");
+                await AppState.Logger.Error(ex);
+                WpfMessageBox.Show($"Ошибка: {ex}");
             }
         }
 
@@ -260,14 +296,14 @@ namespace AISDisciplineDesc.ViewModels
 
             if (SelectedUser != null)
             {
-                // обновление существующего
-                result = await _supabase.UpdateUser(SelectedUser.id, Login, Password, Name, divisionName, unitNumber, SelectedRole);
+                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} обновил данные пользователя {Login}");
+                result = await _supabase.UpdateUser(SelectedUser.id, Login, Password, Name, divisionName, unitNumber, SelectedRole, FlashSerial);
                 if (result) WpfMessageBox.Show("Пользователь обновлён!");
             }
             else
             {
-                // добавление нового
-                result = await _supabase.CreateUser(Login, Password, Name, divisionName, unitNumber, SelectedRole);
+                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} добавил пользователя {Login}");
+                result = await _supabase.CreateUser(Login, Password, Name, divisionName, unitNumber, SelectedRole, FlashSerial);
                 if (result) WpfMessageBox.Show("Пользователь успешно добавлен!");
             }
 
@@ -301,6 +337,7 @@ namespace AISDisciplineDesc.ViewModels
             bool success = await _supabase.DeleteUser(SelectedUser.id);
             if (success)
             {
+                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} удалил пользователя {SelectedUser.login}");
                 WpfMessageBox.Show("Пользователь удалён.");
                 await LoadUsersAsync();
                 ClearForm();
@@ -310,6 +347,16 @@ namespace AISDisciplineDesc.ViewModels
             {
                 WpfMessageBox.Show("Ошибка при удалении пользователя.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void RefreshFlashDrives()
+        {
+            var drives = AppState.UsbAuth.GetAllAuthFlashDrives();
+            FlashDrives.Clear();
+            foreach (var d in drives)
+                FlashDrives.Add(d);
+            if (FlashDrives.Count == 1)
+                SelectedFlashDrive = FlashDrives[0]; 
         }
 
         private void Exit()
@@ -325,11 +372,19 @@ namespace AISDisciplineDesc.ViewModels
             ClearForm();
         }
 
+        private void OpenLogs()
+        {
+            var logsWindow = new Views.LogsWindow();
+            logsWindow.Owner = _owner;
+            logsWindow.ShowDialog();
+        }
+
         private void ClearForm()
         {
             Login = "";
             Password = "";
             Name = "";
+            FlashSerial = "";
             SelectedDivision = null;
             SelectedUnit = null;
             SelectedRole = "";

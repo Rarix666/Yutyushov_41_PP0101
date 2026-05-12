@@ -6,62 +6,92 @@
         xmlns:local="clr-namespace:AISDisciplineDesc"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Приказы" Height="450" Width="800">
-    <Grid>
-        <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="35,30,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="DivCombobox" DisplayMemberPath="name" 
-                  ItemsSource="{Binding Divisions}"
-                  SelectedItem="{Binding SelectedDivision}"
-                  HorizontalAlignment="Left" Margin="139,32,0,0" VerticalAlignment="Top" Width="184"/>
+        Title="Приказы" Height="500" Width="900">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <DataGrid Name="DataBaseGrid" 
+        <!-- Верхняя строка: подразделение + кнопка Назад -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Label Content="Подразделение:" VerticalAlignment="Center"/>
+                <ComboBox Name="DivCombobox" DisplayMemberPath="name"
+                          ItemsSource="{Binding Divisions}"
+                          SelectedItem="{Binding SelectedDivision}"
+                          Width="184" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Button Grid.Column="2" Command="{Binding BackCommand}" Content="Назад"
+                    Height="49" Width="90" FontSize="20"/>
+        </Grid>
+
+        <!-- Строка поиска -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Поиск:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}"
+                     Width="200" Margin="5,0" VerticalAlignment="Center"
+                     ToolTip="Введите название или его часть"/>
+
+            <Label Content="Дата с:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <DatePicker SelectedDate="{Binding SearchDateFrom}"
+                        Width="110" Margin="5,0" VerticalAlignment="Center"/>
+
+            <Label Content="по:" VerticalAlignment="Center"/>
+            <DatePicker SelectedDate="{Binding SearchDateTo}"
+                        Width="110" Margin="5,0" VerticalAlignment="Center"/>
+
+            <ComboBox ItemsSource="{Binding Statuses}"
+                      SelectedItem="{Binding SelectedStatus}"
+                      Width="130" Margin="10,0,0,0" VerticalAlignment="Center"
+                      ToolTip="Фильтр по статусу"/>
+
+            <Button Content="Очистить" Command="{Binding ClearFiltersCommand}"
+                    Width="100" Margin="10,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- DataGrid с документами -->
+        <DataGrid Grid.Row="2" Name="DataBaseGrid"
                   ItemsSource="{Binding Documents}"
                   SelectedItem="{Binding SelectedDocument}"
-                  Margin="10,126,10,10"
                   AutoGenerateColumns="False"
-                  CanUserAddRows="False"
-                  GridLinesVisibility="Horizontal"
-                  RowHeight="NaN">
+                  CanUserAddRows="False" GridLinesVisibility="Horizontal">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Открыть" Command="{Binding OpenDocumentCommand}"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Наименование" 
-                                    Binding="{Binding Name}" 
-                                    Width="*" 
-                                    IsReadOnly="True">
+                <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Дата регистрации" 
-                                    Binding="{Binding DateDispatch, StringFormat=dd.MM.yyyy}" 
-                                    Width="*" 
-                                    IsReadOnly="True">
+                <DataGridTextColumn Header="Дата регистрации" Binding="{Binding DateDispatch, StringFormat=dd.MM.yyyy}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Срок исполнения" 
-                                    Binding="{Binding DueDate, StringFormat=dd.MM.yyyy}" 
-                                    Width="*" 
-                                    IsReadOnly="True">
+                <DataGridTextColumn Header="Срок исполнения" Binding="{Binding DueDate, StringFormat=dd.MM.yyyy}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="Отметка о выполнении" 
-                                    Binding="{Binding Status}" 
-                                    Width="*" 
-                                    IsReadOnly="True">
+                <DataGridTextColumn Header="Отметка о выполнении" Binding="{Binding Status}" Width="*" IsReadOnly="True">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -70,9 +100,5 @@
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-
-        <Button Command="{Binding BackCommand}" Content="Назад" 
-                HorizontalAlignment="Left" Margin="685,19,0,0" 
-                VerticalAlignment="Top" Height="49" Width="90" FontSize="20"/>
     </Grid>
 </Window>

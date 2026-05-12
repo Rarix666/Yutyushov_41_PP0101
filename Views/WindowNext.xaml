@@ -24,14 +24,14 @@
         <Image Grid.Row="0" Grid.Column="0" Width="100" Height="100" Margin="10" Stretch="UniformToFill"
                Source="{Binding AvatarUrl, Converter={StaticResource ImageConverter}}"/>
 
-        <Label Grid.Row="0" Grid.Column="1" Content="Личное дело" FontSize="20" 
+        <Label Grid.Row="0" Grid.Column="1" Content="{Binding UserName}" FontSize="20" 
                VerticalAlignment="Center" Margin="10" Cursor="Hand">
             <Label.InputBindings>
                 <MouseBinding Gesture="LeftClick" Command="{Binding OpenProfileCommand}"/>
             </Label.InputBindings>
         </Label>
 
-        <Button Grid.Row="0" Grid.Column="2" Content="Выйти" Width="100" Height="40" 
+        <Button Background="#b80707" Grid.Row="0" Grid.Column="2" Content="Выйти" Width="100" Height="40" 
                 Margin="10" FontSize="22" Command="{Binding ExitCommand}"/>
 
         <DataGrid x:Name="DataBaseGrid" Grid.Row="1" Grid.ColumnSpan="3" Margin="10"
@@ -39,7 +39,8 @@
                   SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   CanUserAddRows="False"
-                  GridLinesVisibility="Horizontal">
+                  GridLinesVisibility="Horizontal"
+                  RowHeight="NaN">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Выполнено" 

@@ -28,6 +28,7 @@
     <PackageReference Include="PdfiumViewer" Version="2.13.0" />
     <PackageReference Include="PdfiumViewer.Native.x86_64.v8-xfa" Version="2018.4.8.256" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
+    <PackageReference Include="System.Management" Version="10.0.7" />
   </ItemGroup>
 
 </Project>

@@ -4,6 +4,7 @@ using AISDisciplineDesc.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace AISDisciplineDesc.ViewModels
         private readonly SupabaseClient _supabase = AppState.Supabase;
         private readonly Window _owner;
 
-        // Список подразделений для ComboBox
+        // Подразделения
         private ObservableCollection<dynamic> _divisions;
         public ObservableCollection<dynamic> Divisions
         {
@@ -25,7 +26,6 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _divisions, value);
         }
 
-        // Выбранное подразделение
         private dynamic _selectedDivision;
         public dynamic SelectedDivision
         {
@@ -33,13 +33,11 @@ namespace AISDisciplineDesc.ViewModels
             set
             {
                 if (SetProperty(ref _selectedDivision, value))
-                {
                     _ = LoadDocumentsAsync();
-                }
             }
         }
 
-        // Список документов для DataGrid
+        // Документы
         private ObservableCollection<Documents> _documents;
         public ObservableCollection<Documents> Documents
         {
@@ -47,7 +45,6 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _documents, value);
         }
 
-        // Выбранный документ (для контекстного меню)
         private Documents _selectedDocument;
         public Documents SelectedDocument
         {
@@ -55,11 +52,65 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _selectedDocument, value);
         }
 
+        // ========== Фильтры ==========
+        private string _searchName = "";
+        public string SearchName
+        {
+            get => _searchName;
+            set
+            {
+                if (SetProperty(ref _searchName, value))
+                    _ = LoadDocumentsAsync();
+            }
+        }
+
+        private DateTime? _searchDateFrom;
+        public DateTime? SearchDateFrom
+        {
+            get => _searchDateFrom;
+            set
+            {
+                if (SetProperty(ref _searchDateFrom, value))
+                    _ = LoadDocumentsAsync();
+            }
+        }
+
+        private DateTime? _searchDateTo;
+        public DateTime? SearchDateTo
+        {
+            get => _searchDateTo;
+            set
+            {
+                if (SetProperty(ref _searchDateTo, value))
+                    _ = LoadDocumentsAsync();
+            }
+        }
+
+        // Список статусов
+        public ObservableCollection<string> Statuses { get; } = new ObservableCollection<string>
+        {
+            "Выполнено",
+            "Не выполнено",
+            "Просрочено"
+        };
+
+        private string _selectedStatus = "Все";
+        public string SelectedStatus
+        {
+            get => _selectedStatus;
+            set
+            {
+                if (SetProperty(ref _selectedStatus, value))
+                    _ = LoadDocumentsAsync();
+            }
+        }
+
         // Команды
         public AsyncRelayCommand LoadDivisionsCommand { get; }
         public AsyncRelayCommand LoadDocumentsCommand { get; }
         public RelayCommand OpenDocumentCommand { get; }
         public RelayCommand BackCommand { get; }
+        public RelayCommand ClearFiltersCommand { get; }
 
         public WindowOrderViewModel(Window owner)
         {
@@ -71,6 +122,7 @@ namespace AISDisciplineDesc.ViewModels
             LoadDocumentsCommand = new AsyncRelayCommand(LoadDocumentsAsync);
             OpenDocumentCommand = new RelayCommand(OpenDocument, () => SelectedDocument != null);
             BackCommand = new RelayCommand(Back);
+            ClearFiltersCommand = new RelayCommand(ClearFilters);
 
             _ = LoadDivisionsAsync();
         }
@@ -104,18 +156,43 @@ namespace AISDisciplineDesc.ViewModels
                     return;
                 }
 
-                var docs = AppState.Documentation
-                    .Where(w => w.unit == AppState.CurrentUser.unit && w.Division == SelectedDivision.name)
-                    .Select(w => new Documents
-                    {
-                        Name = w.Name,
-                        DateDispatch = w.DateDispatch,
-                        DueDate = w.DueDate,
-                        Status = w.Status,
-                        Description = w.Description,
-                        file_url = w.file_url
-                    })
-                    .ToList();
+                var allDocs = AppState.Documentation
+                    .Where(w => w.unit == AppState.CurrentUser.unit
+                                && w.Division == SelectedDivision.name);
+
+                // Фильтр по названию
+                if (!string.IsNullOrWhiteSpace(SearchName))
+                {
+                    allDocs = allDocs.Where(w =>
+                        w.Name.IndexOf(SearchName, StringComparison.OrdinalIgnoreCase) >= 0);
+                }
+
+                // Фильтр по дате регистрации
+                if (SearchDateFrom.HasValue)
+                {
+                    allDocs = allDocs.Where(w => w.DateDispatch.Date >= SearchDateFrom.Value.Date);
+                }
+
+                if (SearchDateTo.HasValue)
+                {
+                    allDocs = allDocs.Where(w => w.DateDispatch.Date <= SearchDateTo.Value.Date);
+                }
+
+                // Фильтр по статусу
+                if (!string.IsNullOrEmpty(SelectedStatus) && SelectedStatus != "Все")
+                {
+                    allDocs = allDocs.Where(w => w.Status == SelectedStatus);
+                }
+
+                var docs = allDocs.Select(w => new Documents
+                {
+                    Name = w.Name,
+                    DateDispatch = w.DateDispatch,
+                    DueDate = w.DueDate,
+                    Status = w.Status,
+                    Description = w.Description,
+                    file_url = w.file_url
+                }).ToList();
 
                 Documents.Clear();
                 foreach (var doc in docs)
@@ -123,15 +200,16 @@ namespace AISDisciplineDesc.ViewModels
             }
             catch (Exception ex)
             {
-                WpfMessageBox.Show($"Ошибка: {ex.Message}");
+                await AppState.Logger.Error(ex);
+                WpfMessageBox.Show($"Возникла техническая ошибка, обратитесь к администратору");
             }
         }
 
-        private void OpenDocument()
+        private void OpenDocument() //Функция открытия документа
         {
             if (SelectedDocument == null)
             {
-                WpfMessageBox.Show("Не выбрана запись для открытия.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                WpfMessageBox.Show("Не выбрана запись для открытия.");
                 return;
             }
 
@@ -140,12 +218,19 @@ namespace AISDisciplineDesc.ViewModels
             detailWindow.ShowDialog();
         }
 
-        private void Back()
+        private void Back() //Переход в главное окно
         {
-            // Возврат к окну командира
             WindowCommander commander = new WindowCommander();
             commander.Show();
             _owner.Close();
+        }
+
+        private void ClearFilters() //Очистка фильтров
+        {
+            SearchName = "";
+            SearchDateFrom = null;
+            SearchDateTo = null;
+            SelectedStatus = "Все";
         }
     }
 }

@@ -56,8 +56,18 @@ namespace AISDisciplineDesc.ViewModels
                 bool success = await AppState.Supabase.AuthenticateUser(login, password);
                 if (success)
                 {
+                    string expectedSerial = AppState.CurrentUser.flash_serial;
+                    if (!AppState.UsbAuth.IsValidKeyPresent(expectedSerial))
+                    {
+                        WpfMessageBox.Show("Вставьте назначенную вам флешку для авторизации.");
+                        return;
+                    }
+
+                    await AppState.Supabase.UpdateOverdueDocumentsAsync();
+
                     if (AppState.CurrentUser.role == "admin")
                     {
+                        await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} вошёл в систему");
                         WpfMessageBox.Show("Вы авторизованы как администратор");
                         AdminPanel admin = new AdminPanel();
                         admin.Show();
@@ -65,6 +75,7 @@ namespace AISDisciplineDesc.ViewModels
                     }
                     else if (AppState.CurrentUser.role == "Командир части")
                     {
+                        await AppState.Logger.Info($"Командир части {AppState.CurrentUser.name} вошёл в систему");
                         WpfMessageBox.Show("Вы авторизованы как командир части");
                         WindowCommander commander = new WindowCommander();
                         commander.Show();
@@ -72,6 +83,7 @@ namespace AISDisciplineDesc.ViewModels
                     }
                     else
                     {
+                        await AppState.Logger.Info($"Командир подразделения {AppState.CurrentUser.name} вошёл в систему");
                         WpfMessageBox.Show("Авторизация прошла успешно!");
                         WindowNext window = new WindowNext();
                         window.Show();
@@ -80,16 +92,18 @@ namespace AISDisciplineDesc.ViewModels
                 }
                 else
                 {
+                    await AppState.Logger.Info($"Попытка авторизации с неверными данными. Login: {login}");
                     WpfMessageBox.Show("Данного пользователя не существует");
                 }
             }
-            catch
+            catch (Exception ex) 
             {
+                await AppState.Logger.Error(ex);
                 WpfMessageBox.Show("Ошибка авторизации");
             }
         }
 
-        public void UpdatePassword(string newPassword)
+        public void UpdatePassword(string newPassword) //Метод чтобы вытягивать то что находится в поле пароля и передавать в БД для авторизации
         {
             Password = newPassword;
         }
