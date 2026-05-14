@@ -5,41 +5,51 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
 {
     internal class EncryptionService
     {
-        private readonly byte[] _key; 
+        private const int IvSize = 16; //Размер IV для AES
+        private readonly byte[] _key;
 
-        public EncryptionService(byte[] key)
+        public EncryptionService(byte[] key) //Проверка соответсвия количества байтов в массиве для алгоритма AES-256
         {
             if (key.Length != 32)
-                throw new ArgumentException("Ключ должен быть 32 байта для AES-256");
+                throw new ArgumentException("Ключ должен быть 32 байта");
             _key = key;
         }
 
-        /// <summary>
-        /// Шифрует данные. Возвращает массив: [IV 16 байт] + [зашифрованные данные]
-        /// </summary>
-        public byte[] Encrypt(byte[] plainData)
+        private Aes CreateAes(bool forEncryption)
         {
-            using (var aes = Aes.Create())
+            var algorithm = Aes.Create();
+            algorithm.Key = _key; //Подставляем ключ которым будем шифровать данные
+            if (!forEncryption)
+                algorithm.IV = new byte[IvSize];
+            else
+                algorithm.GenerateIV(); //генерация случайного IV из 16 байт
+            return algorithm;
+        }
+
+        /// <summary>
+        /// Шифрует данные. Возвращает массив: IV 16 байт + зашифрованные данные
+        /// </summary>
+        public byte[] Encrypt(byte[] plainData) // plainData - незашифрованные данные
+        {
+
+            using (var algorithm = CreateAes(true)) // получаем AES с сгенерированным IV
+            using (var encryptor = algorithm.CreateEncryptor())
+            using (var memoryStream = new MemoryStream()) // заносим все зашифрованные данные в оперативную память для отправки
             {
-                aes.Key = _key;
-                aes.GenerateIV();
-                using (var encryptor = aes.CreateEncryptor())
-                using (var ms = new MemoryStream())
+                // Пишем IV в начало
+                memoryStream.Write(algorithm.IV, 0, IvSize);
+                using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                 {
-                    // Пишем IV в начало
-                    ms.Write(aes.IV, 0, aes.IV.Length);
-                    using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-                    {
-                        cs.Write(plainData, 0, plainData.Length);
-                        cs.FlushFinalBlock();
-                    }
-                    return ms.ToArray();
+                    cryptoStream.Write(plainData, 0, plainData.Length);
+                    cryptoStream.FlushFinalBlock(); // завершение работы шифровальщика
                 }
+                return memoryStream.ToArray();
             }
         }
 
@@ -48,21 +58,26 @@ namespace AISDisciplineDesc.Services
         /// </summary>
         public byte[] Decrypt(byte[] encryptedData)
         {
-            using (var aes = Aes.Create())
+            if (encryptedData == null || encryptedData.Length < IvSize)
             {
-                aes.Key = _key;
-                // Извлекаем IV (первые 16 байт)
-                byte[] iv = new byte[16];
-                Array.Copy(encryptedData, 0, iv, 0, iv.Length);
-                aes.IV = iv;
+                WpfMessageBox.Show("Данные повреждены!");
+                throw new ArgumentException($"Данные повреждены: недостаточная длина. Минимум {IvSize} байт.");
+            }
 
-                using (var decryptor = aes.CreateDecryptor())
-                using (var ms = new MemoryStream(encryptedData, iv.Length, encryptedData.Length - iv.Length))
-                using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                using (var result = new MemoryStream())
+            // Извлекаем IV (первые 16 байт)
+            byte[] iv = new byte[IvSize];
+            Array.Copy(encryptedData, 0, iv, 0, IvSize);
+
+            using (var algorithm = CreateAes(false)) // AES без генерации IV
+            {
+                algorithm.IV = iv; // устанавливаем извлечённый IV
+                using (var decryptor = algorithm.CreateDecryptor())
+                using (var memoryStream = new MemoryStream(encryptedData, IvSize, encryptedData.Length - IvSize)) // Передаётся весь оставшийся массив, начиная с 16-го байта
+                using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read)) // расшифровываем данные
+                using (var resultStream = new MemoryStream()) // передаём результат
                 {
-                    cs.CopyTo(result);
-                    return result.ToArray();
+                    cryptoStream.CopyTo(resultStream);
+                    return resultStream.ToArray();
                 }
             }
         }

@@ -92,7 +92,7 @@ namespace AISDisciplineDesc.ViewModels
                 }
                 else
                 {
-                    await AppState.Logger.Info($"Попытка авторизации с неверными данными. Login: {login}");
+                    await AppState.Logger.Warn($"Попытка авторизации с неверными данными. Login: {login}");
                     WpfMessageBox.Show("Данного пользователя не существует");
                 }
             }
