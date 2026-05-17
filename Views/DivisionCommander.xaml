@@ -26,7 +26,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding id}" Width="50"/>
                         <DataGridTextColumn Header="ФИО" Binding="{Binding name}" Width="*"/>
-                        <DataGridTextColumn Header="Подразделение" Binding="{Binding division}" Width="*"/>
+                        <DataGridTextColumn Header="Подразделение" Binding="{Binding division_name}" Width="*"/>
                         <DataGridTextColumn Header="Роль" Binding="{Binding role}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -65,7 +65,7 @@
                              Grid.Row="6" Margin="0,2,0,8" Height="45" TextWrapping="Wrap" AcceptsReturn="True"/>
 
                     <Label Content="Подразделение:" Grid.Row="7" Margin="0,5,0,0"/>
-                    <TextBox x:Name="txtDivision" Text="{Binding Division, UpdateSourceTrigger=PropertyChanged}"
+                    <ComboBox Name="TextDiv" DisplayMemberPath="name" ItemsSource="{Binding Divisions}" SelectedItem="{Binding SelectedDivision}"
                              Grid.Row="8" Margin="0,2,0,15" Height="32"/>
 
                     <StackPanel Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,25,0,0">

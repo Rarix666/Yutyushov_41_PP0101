@@ -22,6 +22,8 @@ namespace AISDisciplineDesc
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel(this);
+
+            this.Closing += (s, e) => System.Windows.Application.Current.Shutdown();
         }
         private void textBox1_PasswordChanged(object sender, RoutedEventArgs e)
         {

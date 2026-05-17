@@ -29,6 +29,8 @@ namespace AISDisciplineDesc
         {
             InitializeComponent();
             DataContext = new DivisionCommanderViewModel(this);
+
+            this.Closing += (s, e) => System.Windows.Application.Current.Shutdown();
         }
 
         private void txtPhone_PreviewTextInput(object sender, TextCompositionEventArgs e)

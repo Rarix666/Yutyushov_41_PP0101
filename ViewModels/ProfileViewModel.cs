@@ -14,7 +14,7 @@ namespace AISDisciplineDesc.ViewModels
         private readonly Window _owner;
 
         public string Name => AppState.CurrentUser?.name ?? "";
-        public string Division => AppState.CurrentUser?.division ?? "";
+        public string Division => AppState.CurrentUser?.division_name ?? "";
         public string Role => AppState.CurrentUser?.role ?? "";
         public string Phone => AppState.CurrentUser?.phone ?? "";
         public string Address => AppState.CurrentUser?.address ?? "";
@@ -40,7 +40,7 @@ namespace AISDisciplineDesc.ViewModels
                 WindowNext windowNext = new WindowNext();
                 windowNext.Show();
             }
-            _owner.Close();
+            _owner.Hide();
         }
     }
 }

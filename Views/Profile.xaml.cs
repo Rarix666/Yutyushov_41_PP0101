@@ -25,6 +25,8 @@ namespace AISDisciplineDesc
         {
             InitializeComponent();
             DataContext = new ProfileViewModel(this);
+
+            this.Closing += (s, e) => System.Windows.Application.Current.Shutdown();
         }
     }
 }

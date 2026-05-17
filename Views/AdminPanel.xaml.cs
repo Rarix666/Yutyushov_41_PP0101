@@ -26,6 +26,8 @@ namespace AISDisciplineDesc
         {
             InitializeComponent();
             DataContext = new AdminPanelViewModel(this);
+
+            this.Closing += (s, e) => System.Windows.Application.Current.Shutdown();
         }
     }
 }

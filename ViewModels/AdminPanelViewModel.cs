@@ -45,7 +45,7 @@ namespace AISDisciplineDesc.ViewModels
                         SelectedRole = value.role;
                         FlashSerial = value.flash_serial;
                         if (Divisions != null)
-                            SelectedDivision = Divisions.FirstOrDefault(d => d.name == value.division);
+                            SelectedDivision = Divisions.FirstOrDefault(d => d.id.ToString() == value.division);
                         if (Units != null)
                             SelectedUnit = Units.FirstOrDefault(u => u.number == value.unit);
                         Password = "";
@@ -80,29 +80,29 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _name, value);
         }
 
-        private ObservableCollection<dynamic> _divisions;
-        public ObservableCollection<dynamic> Divisions
+        private ObservableCollection<Divisions> _divisions;
+        public ObservableCollection<Divisions> Divisions
         {
             get => _divisions;
             set => SetProperty(ref _divisions, value);
         }
 
-        private ObservableCollection<dynamic> _units;
-        public ObservableCollection<dynamic> Units
+        private ObservableCollection<Units> _units;
+        public ObservableCollection<Units> Units
         {
             get => _units;
             set => SetProperty(ref _units, value);
         }
 
-        private dynamic _selectedDivision;
-        public dynamic SelectedDivision
+        private Divisions _selectedDivision;
+        public Divisions SelectedDivision
         {
             get => _selectedDivision;
             set => SetProperty(ref _selectedDivision, value);
         }
 
-        private dynamic _selectedUnit;
-        public dynamic SelectedUnit
+        private Units _selectedUnit;
+        public Units SelectedUnit
         {
             get => _selectedUnit;
             set => SetProperty(ref _selectedUnit, value);
@@ -152,8 +152,8 @@ namespace AISDisciplineDesc.ViewModels
         {
             _owner = owner;
             Users = new ObservableCollection<AdminData>();
-            Divisions = new ObservableCollection<dynamic>();
-            Units = new ObservableCollection<dynamic>();
+            Divisions = new ObservableCollection<Divisions>();
+            Units = new ObservableCollection<Units>();
 
             LoadUsersCommand = new AsyncRelayCommand(LoadUsersAsync);
             SaveCommand = new AsyncRelayCommand(SaveUserAsync);
@@ -290,8 +290,8 @@ namespace AISDisciplineDesc.ViewModels
                 return;
             }
 
-            string divisionName = SelectedDivision.name;
-            string unitNumber = SelectedUnit.number;
+            int? divisionName = SelectedDivision.id;
+            int? unitNumber = SelectedUnit.id;
             bool result;
 
             if (SelectedUser != null)
@@ -363,7 +363,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             MainWindow main = new MainWindow();
             main.Show();
-            _owner.Close();
+            _owner.Hide();
         }
 
         private void ClearSelection()

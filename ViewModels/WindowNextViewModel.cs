@@ -130,7 +130,7 @@ namespace AISDisciplineDesc.ViewModels
             profile.Show();
             
             var current = WpfApplication.Current.Windows.OfType<WindowNext>().FirstOrDefault();
-            current?.Close();
+            current?.Hide();
         }
 
         private void Exit()
@@ -139,7 +139,7 @@ namespace AISDisciplineDesc.ViewModels
             main.Show();
 
             var current = WpfApplication.Current.Windows.OfType<WindowNext>().FirstOrDefault();
-            current?.Close();
+            current?.Hide();
         }
 
         private async Task OpenOrderAsync(Documents? documents)

@@ -13,12 +13,13 @@ namespace AISDisciplineDesc.Models
         public string name { get; set; }
         public string email { get; set; }
         public string role { get; set; }
-        public string division { get; set; }
+        public int division { get; set; }
         public string phone { get; set; }
         public string address { get; set; }
-        public string unit { get; set; }
+        public int unit { get; set; }
         public string avatar_url { get; set; }
         public string flash_serial { get; set; }
+        public string division_name { get; set; }
 
     }
 

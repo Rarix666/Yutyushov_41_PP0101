@@ -64,9 +64,9 @@ namespace AISDisciplineDesc.ViewModels
         public ObservableCollection<string> LevelList { get; } = new ObservableCollection<string>
         {
             "INFO", "WARN", "ERROR"
-        };
+        }; //Уровни логов для выпадающего списка
 
-        public ObservableCollection<int> PageSizeList { get; } = new ObservableCollection<int> { 50, 100, 200, 500 };
+        public ObservableCollection<int> PageSizeList { get; } = new ObservableCollection<int> { 50, 100, 200, 500 }; //Установка размера страницы лога
 
         private int _page = 1;
         public int Page
@@ -79,7 +79,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private int _pageSize = 100;
+        private int _pageSize = 100; //Количество выводимых записей логов на одной странице
         public int PageSize
         {
             get => _pageSize;
@@ -95,7 +95,7 @@ namespace AISDisciplineDesc.ViewModels
         }
 
         private int _totalCount;
-        public int TotalCount
+        public int TotalCount //Общее количество записей
         {
             get => _totalCount;
             set
@@ -105,7 +105,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        public int TotalPages => (TotalCount + PageSize - 1) / PageSize;
+        public int TotalPages => (TotalCount + PageSize - 1) / PageSize; //Определение количества страниц с записями
 
         private bool _isBusy;
         public bool IsBusy

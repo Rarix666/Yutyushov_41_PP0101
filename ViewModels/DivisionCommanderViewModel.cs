@@ -37,7 +37,8 @@ namespace AISDisciplineDesc.ViewModels
                         Phone = value.phone ?? "";
                         Email = value.email ?? "";
                         Address = value.address ?? "";
-                        Division = value.division ?? "";
+                        if (Divisions != null)
+                            SelectedDivision = Divisions.FirstOrDefault(d => d.id == value.division);
                     }
                     else
                     {
@@ -68,11 +69,18 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _address, value);
         }
 
-        private string _division;
-        public string Division
+        private ObservableCollection<Divisions> _divisions;
+        public ObservableCollection<Divisions> Divisions
         {
-            get => _division;
-            set => SetProperty(ref _division, value);
+            get => _divisions;
+            set => SetProperty(ref _divisions, value);
+        }
+
+        private Divisions _selectedDivision;
+        public Divisions SelectedDivision
+        {
+            get => _selectedDivision;
+            set => SetProperty(ref _selectedDivision, value);
         }
 
         public AsyncRelayCommand LoadPersonnelCommand { get; }
@@ -84,12 +92,14 @@ namespace AISDisciplineDesc.ViewModels
         {
             _owner = owner;
             PersonnelList = new ObservableCollection<PersonnelData>();
+            Divisions = new ObservableCollection<Divisions>();
 
             LoadPersonnelCommand = new AsyncRelayCommand(LoadPersonnelAsync);
             UpdateCommand = new AsyncRelayCommand(UpdateAsync);
             ClearCommand = new RelayCommand(() => SelectedPersonnel = null);
             CloseCommand = new RelayCommand(Close);
 
+            _ = LoadReferencesAsync();
             _ = LoadPersonnelAsync();
         }
 
@@ -109,6 +119,14 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
+        private async Task LoadReferencesAsync()
+        {
+            await AppState.LoadDivisionsAsync();
+            Divisions.Clear();
+            foreach (var div in AppState.divisions)
+                Divisions.Add(div);
+        }
+
         private async Task UpdateAsync()
         {
             if (SelectedPersonnel == null)
@@ -116,6 +134,8 @@ namespace AISDisciplineDesc.ViewModels
                 WpfMessageBox.Show("Выберите сотрудника для обновления.");
                 return;
             }
+
+            int? Division = SelectedDivision.id;
 
             bool success = await _supabase.UpdateUserProfile(
                 SelectedPersonnel.id,
@@ -136,6 +156,7 @@ namespace AISDisciplineDesc.ViewModels
                     PersonnelList[index] = SelectedPersonnel;
                 WpfMessageBox.Show("Данные обновлены.");
                 SelectedPersonnel = null;
+                _ = LoadPersonnelAsync();
                 ClearForm();
             }
             else
@@ -149,14 +170,14 @@ namespace AISDisciplineDesc.ViewModels
             Phone = "";
             Email = "";
             Address = "";
-            Division = "";
+            SelectedDivision = null;
         }
 
         private void Close()
         {
             WindowCommander windowCommander = new WindowCommander();
             windowCommander.Show();
-            _owner.Close();
+            _owner.Hide();
         }
     }
 }

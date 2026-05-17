@@ -23,7 +23,7 @@ namespace AISDisciplineDesc.ViewModels
 
         public string UserName => AppState.CurrentUser?.name ?? "";
 
-        public string Unit => AppState.CurrentUser?.unit ?? "";
+        public int? Unit => AppState.CurrentUser?.unit ?? null;
 
         private ObservableCollection<dynamic> _divisions;
         public ObservableCollection<dynamic> Divisions
@@ -109,14 +109,14 @@ namespace AISDisciplineDesc.ViewModels
                 return;
             }
 
-            string cunit = Unit;
-            string cdivision = SelectedDivision?.name ?? "";
+            int? cunit = Unit;
+            int? cdivision = SelectedDivision?.id ?? "";
             TextRange range = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
             string cdescription = range.Text;
             string cname = OrderName;
             string uploadedFileUrl = null;
 
-            if (string.IsNullOrWhiteSpace(cunit) || string.IsNullOrWhiteSpace(cdivision) ||
+            if (cunit == null || cdivision ==null ||
                 string.IsNullOrWhiteSpace(cdescription) || string.IsNullOrWhiteSpace(cname))
             {
                 WpfMessageBox.Show("Заполните все поля!");
@@ -190,7 +190,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             MainWindow main = new MainWindow();
             main.Show();
-            _owner.Close();
+            _owner.Hide();
         }
 
         private void SelectPdfFile()

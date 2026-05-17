@@ -19,15 +19,15 @@ namespace AISDisciplineDesc.ViewModels
         private readonly Window _owner;
 
         // Подразделения
-        private ObservableCollection<dynamic> _divisions;
-        public ObservableCollection<dynamic> Divisions
+        private ObservableCollection<Divisions> _divisions;
+        public ObservableCollection<Divisions> Divisions
         {
             get => _divisions;
             set => SetProperty(ref _divisions, value);
         }
 
-        private dynamic _selectedDivision;
-        public dynamic SelectedDivision
+        private Divisions _selectedDivision;
+        public Divisions SelectedDivision
         {
             get => _selectedDivision;
             set
@@ -115,7 +115,7 @@ namespace AISDisciplineDesc.ViewModels
         public WindowOrderViewModel(Window owner)
         {
             _owner = owner;
-            Divisions = new ObservableCollection<dynamic>();
+            Divisions = new ObservableCollection<Divisions>();
             Documents = new ObservableCollection<Documents>();
 
             LoadDivisionsCommand = new AsyncRelayCommand(LoadDivisionsAsync);
@@ -158,7 +158,7 @@ namespace AISDisciplineDesc.ViewModels
 
                 var allDocs = AppState.Documentation
                     .Where(w => w.unit == AppState.CurrentUser.unit
-                                && w.Division == SelectedDivision.name);
+                                && w.Division == SelectedDivision.id);
 
                 // Фильтр по названию
                 if (!string.IsNullOrWhiteSpace(SearchName))
@@ -222,7 +222,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             WindowCommander commander = new WindowCommander();
             commander.Show();
-            _owner.Close();
+            _owner.Hide();
         }
 
         private void ClearFilters() //Очистка фильтров

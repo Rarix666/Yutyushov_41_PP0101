@@ -123,7 +123,7 @@ namespace AISDisciplineDesc.Services
             return JsonConvert.DeserializeObject<List<PersonnelData>>(response.Content);
         }
 
-        public async Task<bool> CreateUser(string clogin, string cpassword, string cname, string cdivision, string cunit, string crole, string cflash_serial)
+        public async Task<bool> CreateUser(string clogin, string cpassword, string cname, int? cdivision, int? cunit, string crole, string cflash_serial)
         {
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(cpassword);
@@ -176,7 +176,7 @@ namespace AISDisciplineDesc.Services
             }
         } //Метод необходимый для заполнения combobox частей
 
-        public async Task<bool> CreateOrder(string cunit, string cdivision, string cdescription, string cname, DateTime cduedate, DateTime cdatedispatch, string cfileUrl = null)
+        public async Task<bool> CreateOrder(int? cunit, int? cdivision, string cdescription, string cname, DateTime cduedate, DateTime cdatedispatch, string cfileUrl = null)
         {
             var param = new { cunit, cdivision, cdescription, cname, cduedate, cdatedispatch, cfile_url = cfileUrl };
             var request = CreateRequest("rest/v1/rpc/create_order", Method.Post);
@@ -200,7 +200,7 @@ namespace AISDisciplineDesc.Services
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
         }
 
-        public async Task<bool> UpdateUser(int p_id, string p_login, string p_password, string p_name, string p_division, string p_unit, string p_role, string p_flash_serial)
+        public async Task<bool> UpdateUser(int p_id, string p_login, string p_password, string p_name, int? p_division, int? p_unit, string p_role, string p_flash_serial)
         {
             try
             {
@@ -226,7 +226,7 @@ namespace AISDisciplineDesc.Services
             }
         } //Функция обновления данных пользователей
 
-        public async Task<bool> UpdateUserProfile(int p_id, string p_phone, string p_email, string p_address, string p_division)
+        public async Task<bool> UpdateUserProfile(int p_id, string p_phone, string p_email, string p_address, int ? p_division)
         {
             var request = CreateRequest("/rest/v1/rpc/update_user_profile", Method.Post);
             request.AddJsonBody(new

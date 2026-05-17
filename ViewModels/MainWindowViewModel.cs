@@ -35,8 +35,9 @@ namespace AISDisciplineDesc.ViewModels
             _owner = owner;
 
             if (AppState.Supabase == null)
+            {
                 AppState.Supabase = new SupabaseClient();
-
+            }
             LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync);
         }
 
