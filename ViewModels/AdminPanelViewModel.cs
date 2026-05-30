@@ -184,7 +184,7 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _showUnlock, value);
         }
 
-        private async Task LockUserAsync()
+        private async Task LockUserAsync() //Блокировка аккаунта
         {
             if (SelectedUser == null) return;
             bool success = await _supabase.SetUserLockStatus(SelectedUser.id, true);
@@ -199,7 +199,7 @@ namespace AISDisciplineDesc.ViewModels
             else WpfMessageBox.Show("Ошибка блокировки.");
         }
 
-        private async Task UnlockUserAsync()
+        private async Task UnlockUserAsync() //Разблокировка аккаунта
         {
             if (SelectedUser == null) return;
             bool success = await _supabase.SetUserLockStatus(SelectedUser.id, false);
@@ -214,7 +214,7 @@ namespace AISDisciplineDesc.ViewModels
             else WpfMessageBox.Show("Ошибка разблокировки.");
         }
 
-        private void UpdateLockVisibility()
+        private void UpdateLockVisibility() //Обновление текста изменения статуса блокировки на кнопке в контекстном меню
         {
             if (SelectedUser != null)
             {
@@ -228,7 +228,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private async Task LoadReferencesAsync()
+        private async Task LoadReferencesAsync() //Добавление названий подразделений и частей в combobox в админ панели
         {
             await AppState.LoadDivisionsAsync();
             Divisions.Clear();
@@ -280,7 +280,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private async Task SaveUserAsync()
+        private async Task SaveUserAsync() //Добавление или обновление данных пользователя
         {
             if (string.IsNullOrWhiteSpace(Login) || string.IsNullOrWhiteSpace(Password) ||
                 string.IsNullOrWhiteSpace(Name) || SelectedDivision == null ||
@@ -319,7 +319,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private async Task DeleteUserAsync()
+        private async Task DeleteUserAsync() //Удаление выбранного пользователя
         {
             if (SelectedUser == null)
             {
@@ -349,37 +349,39 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private void RefreshFlashDrives()
+        private void RefreshFlashDrives() //Обновление списка доступных флешек и автоподбор если флешка одна
         {
-            var drives = AppState.UsbAuth.GetAllAuthFlashDrives();
+            var drives = AppState.UsbAuth.GetAllAuthFlashDrives(); //Получаем все флешки содержащие нужный документ
             FlashDrives.Clear();
             foreach (var d in drives)
                 FlashDrives.Add(d);
+
+            //Автовыбор флешки, если она одна
             if (FlashDrives.Count == 1)
                 SelectedFlashDrive = FlashDrives[0]; 
         }
 
-        private void Exit()
+        private void Exit() //Выход из админ панели
         {
             MainWindow main = new MainWindow();
             main.Show();
             _owner.Hide();
         }
 
-        private void ClearSelection()
+        private void ClearSelection() //Очистка выбранного пользователя
         {
             SelectedUser = null;
             ClearForm();
         }
 
-        private void OpenLogs()
+        private void OpenLogs() //Переход на форму логов
         {
             var logsWindow = new Views.LogsWindow();
             logsWindow.Owner = _owner;
             logsWindow.ShowDialog();
         }
 
-        private void ClearForm()
+        private void ClearForm() //Метод очистки формы
         {
             Login = "";
             Password = "";

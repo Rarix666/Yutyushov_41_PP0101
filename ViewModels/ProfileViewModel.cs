@@ -28,7 +28,7 @@ namespace AISDisciplineDesc.ViewModels
             BackCommand = new RelayCommand(GoBack);
         }
 
-        private void GoBack()
+        private void GoBack() //Переход в главное окно в зависимости от роли пользователя
         {
             if (AppState.CurrentUser?.role == "Командир части")
             {

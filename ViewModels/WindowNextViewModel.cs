@@ -61,7 +61,7 @@ namespace AISDisciplineDesc.ViewModels
             _ = LoadDocumentsAsync();
         }
 
-        private async Task LoadDocumentsAsync()
+        private async Task LoadDocumentsAsync() //Загрузка документов и статусов
         {
             try
             {
@@ -98,7 +98,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private async Task UpdateStatusAsync(Documents? document)
+        private async Task UpdateStatusAsync(Documents? document) //Обновление статуса выполнения
         {
             if (document == null)
             {
@@ -124,7 +124,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private void OpenProfile()
+        private void OpenProfile() //Переход в окно профиля
         {
             Profile profile = new Profile();
             profile.Show();
@@ -133,7 +133,7 @@ namespace AISDisciplineDesc.ViewModels
             current?.Hide();
         }
 
-        private void Exit()
+        private void Exit() //Выход из главного окна
         {
             MainWindow main = new MainWindow();
             main.Show();
@@ -142,7 +142,7 @@ namespace AISDisciplineDesc.ViewModels
             current?.Hide();
         }
 
-        private async Task OpenOrderAsync(Documents? documents)
+        private async Task OpenOrderAsync(Documents? documents) //Переход в окно просмотра документов с помощью контекстного меню
         {
             if (documents == null)
             {

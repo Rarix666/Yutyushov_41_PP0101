@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AISDisciplineDesc.Models
 {
-    public class AdminData
+    public class AdminData //конструктор данных для администратора в админ панели
     {
         public int id {  get; set; }
         public string email { get; set; }

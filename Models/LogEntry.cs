@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AISDisciplineDesc.Models
 {
-    public class LogEntry
+    public class LogEntry //Конструктор логов
     {
         public int id {  get; set; }
         public DateTime timestamp { get; set; }

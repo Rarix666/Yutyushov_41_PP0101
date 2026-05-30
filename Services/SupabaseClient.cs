@@ -33,6 +33,7 @@ namespace AISDisciplineDesc.Services
             APIkey = AppSettings.ApiKey;
         }
 
+        //-------Работа с базой данных и интерфейсом--------
         private RestRequest CreateRequest(string endpoint, Method method = Method.Post) //Структура запроса к Supabase
         {
             var request = new RestRequest(endpoint, method);

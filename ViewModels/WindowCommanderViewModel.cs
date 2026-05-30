@@ -93,7 +93,7 @@ namespace AISDisciplineDesc.ViewModels
             _ = LoadDivisionsAsync();
         }
 
-        private async Task LoadDivisionsAsync()
+        private async Task LoadDivisionsAsync() //Загрузка данных о подразделениях в combobox
         {
             await AppState.LoadDivisionsAsync();
             Divisions.Clear();
@@ -101,7 +101,7 @@ namespace AISDisciplineDesc.ViewModels
                 Divisions.Add(div);
         }
 
-        private async Task ExecuteCreateOrder(object parameter)
+        private async Task ExecuteCreateOrder(object parameter) //Публикация документа
         {
             if (parameter is not WpfRichTextBox richTextBox)
             {
@@ -165,35 +165,35 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private void OpenProfile()
+        private void OpenProfile() //Переход в окно профиля
         {
             Profile profile = new Profile();
             profile.Show();
             _owner.Hide();
         }
 
-        private void OpenOrders()
+        private void OpenOrders() //Переход в окно приказов
         {
             WindowOrder order = new WindowOrder();
             order.Show();
             _owner.Hide();
         }
 
-        private void OpenPersonnel()
+        private void OpenPersonnel() //Переход в окно управления личными делами
         {
             DivisionCommander division = new DivisionCommander();
             division.Show();
             _owner.Hide();
         }
 
-        private void Exit()
+        private void Exit() //Выход из главного окна командира части
         {
             MainWindow main = new MainWindow();
             main.Show();
             _owner.Hide();
         }
 
-        private void SelectPdfFile()
+        private void SelectPdfFile() //Выбор PDF для отправки
         {
             var dialog = new Microsoft.Win32.OpenFileDialog();
             dialog.Filter = "PDF files (*.pdf)|*.pdf";

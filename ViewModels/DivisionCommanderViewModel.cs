@@ -25,7 +25,7 @@ namespace AISDisciplineDesc.ViewModels
         }
 
         private PersonnelData _selectedPersonnel;
-        public PersonnelData SelectedPersonnel
+        public PersonnelData SelectedPersonnel //Вывод данных выбранного коммандира в отдельные textbox
         {
             get => _selectedPersonnel;
             set
@@ -103,7 +103,7 @@ namespace AISDisciplineDesc.ViewModels
             _ = LoadPersonnelAsync();
         }
 
-        private async Task LoadPersonnelAsync()
+        private async Task LoadPersonnelAsync() //Загрузка данных в datagrid с учётом роли пользователей
         {
             try
             {
@@ -119,7 +119,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private async Task LoadReferencesAsync()
+        private async Task LoadReferencesAsync() //Загрузка данных подразделений в combobox
         {
             await AppState.LoadDivisionsAsync();
             Divisions.Clear();
@@ -127,11 +127,11 @@ namespace AISDisciplineDesc.ViewModels
                 Divisions.Add(div);
         }
 
-        private async Task UpdateAsync()
+        private async Task UpdateAsync() //Обновлнение данных командира в панели управления личными делами
         {
             if (SelectedPersonnel == null)
             {
-                WpfMessageBox.Show("Выберите сотрудника для обновления.");
+                WpfMessageBox.Show("Выберите аккаунт для обновления.");
                 return;
             }
 
@@ -155,6 +155,7 @@ namespace AISDisciplineDesc.ViewModels
                 if (index >= 0)
                     PersonnelList[index] = SelectedPersonnel;
                 WpfMessageBox.Show("Данные обновлены.");
+                await AppState.Logger.Info($"Пользователь {AppState.CurrentUser.login}, обновил данные пользователя {SelectedPersonnel.name} под номером {SelectedPersonnel.id}");
                 SelectedPersonnel = null;
                 _ = LoadPersonnelAsync();
                 ClearForm();
@@ -165,7 +166,7 @@ namespace AISDisciplineDesc.ViewModels
             }
         }
 
-        private void ClearForm()
+        private void ClearForm() //Очистка данных на форме
         {
             Phone = "";
             Email = "";

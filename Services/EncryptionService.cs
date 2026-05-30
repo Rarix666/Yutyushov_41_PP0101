@@ -9,7 +9,7 @@ using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
 {
-    internal class EncryptionService
+    internal class EncryptionService //Сервис для шифрования и расшифрования документов
     {
         private const int IvSize = 16; //Размер IV для AES
         private readonly byte[] _key;
@@ -56,7 +56,7 @@ namespace AISDisciplineDesc.Services
         /// <summary>
         /// Расшифровывает данные, полученные методом Encrypt
         /// </summary>
-        public byte[] Decrypt(byte[] encryptedData)
+        public byte[] Decrypt(byte[] encryptedData) //encryptedData - зашифрованные данные
         {
             if (encryptedData == null || encryptedData.Length < IvSize)
             {

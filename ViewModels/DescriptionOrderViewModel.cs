@@ -46,7 +46,7 @@ namespace AISDisciplineDesc.ViewModels
 
         public RelayCommand CloseCommand { get; }
 
-        public DescriptionOrderViewModel(Window owner, Documents document)
+        public DescriptionOrderViewModel(Window owner, Documents document) //Валидация файла PDF перед отображением
         {
             _owner = owner;
             DocumentName = document.Name;
@@ -67,7 +67,7 @@ namespace AISDisciplineDesc.ViewModels
             CloseCommand = new RelayCommand(() => _owner.Close());
         }
 
-        private async Task LoadPdfAsync(string url)
+        private async Task LoadPdfAsync(string url) //Загрузка PDF в окне просмотра
         {
             try
             {

@@ -18,6 +18,6 @@ namespace AISDisciplineDesc.Models
             Configuration = builder.Build();
         }
 
-        public static string ApiKey => Configuration["API_KEY"];
+        public static string ApiKey => Configuration["API_KEY"]; //Конфигуратор скрытого API-ключа
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AISDisciplineDesc.Models
 {
-    public class Documents
+    public class Documents //Конструктор данных документов
     {
         public int id {  get; set; }
         public string Name { get; set; }

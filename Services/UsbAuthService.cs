@@ -56,7 +56,7 @@ namespace AISDisciplineDesc.Services
                 });
         }
 
-        private string GetDriveSerial(char driveLetter)
+        private string GetDriveSerial(char driveLetter) //Метод вытаскивающий серийный номер флешки для присвоения аккаунту
         {
             try
             {

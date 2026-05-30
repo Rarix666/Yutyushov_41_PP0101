@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AISDisciplineDesc.Models
 {
-    public class UserData //Конструктор для пользователя
+    public class UserData //Конструктор для авторизованного пользователя
     {
         public int id { get; set; }
         public string login { get; set; }

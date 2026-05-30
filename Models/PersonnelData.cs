@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AISDisciplineDesc.Models
 {
-    public class PersonnelData
+    public class PersonnelData //Конструктор данных для панели управления личными делами
     {
         public int id { get; set; }
         public string name { get; set; }
