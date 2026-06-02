@@ -59,7 +59,13 @@ namespace AISDisciplineDesc.ViewModels
         public string Email
         {
             get => _email;
-            set => SetProperty(ref _email, value);
+            set
+            {
+                if (SetProperty(ref _email, value))
+                {
+                    IsEmailInvalid = false;
+                }
+            }
         }
 
         private string _address;
@@ -81,6 +87,15 @@ namespace AISDisciplineDesc.ViewModels
         {
             get => _selectedDivision;
             set => SetProperty(ref _selectedDivision, value);
+        }
+
+        // ----Настройка стиля полей----
+
+        private bool _isEmailInvalid;
+        public bool IsEmailInvalid
+        {
+            get => _isEmailInvalid;
+            set => SetProperty(ref _isEmailInvalid, value);
         }
 
         public AsyncRelayCommand LoadPersonnelCommand { get; }
@@ -135,6 +150,14 @@ namespace AISDisciplineDesc.ViewModels
                 return;
             }
 
+            IsEmailInvalid = false; // Сброс красной подсветки email
+
+            if (!string.IsNullOrWhiteSpace(Email) && !Email.Contains("@")) //Проверка правильного заполнения поля email
+            {
+                IsEmailInvalid = true;
+                return;
+            }
+
             int? Division = SelectedDivision.id;
 
             bool success = await _supabase.UpdateUserProfile(
@@ -147,6 +170,8 @@ namespace AISDisciplineDesc.ViewModels
 
             if (success)
             {
+                string personalName = SelectedPersonnel.name;
+                int personalId = SelectedPersonnel.id;
                 SelectedPersonnel.phone = Phone;
                 SelectedPersonnel.email = Email;
                 SelectedPersonnel.address = Address;
@@ -155,7 +180,9 @@ namespace AISDisciplineDesc.ViewModels
                 if (index >= 0)
                     PersonnelList[index] = SelectedPersonnel;
                 WpfMessageBox.Show("Данные обновлены.");
-                await AppState.Logger.Info($"Пользователь {AppState.CurrentUser.login}, обновил данные пользователя {SelectedPersonnel.name} под номером {SelectedPersonnel.id}");
+
+                await AppState.Logger.Info($"Пользователь {AppState.CurrentUser.login} обновил данные: ФИО: {personalName}, ID: {personalId}");
+
                 SelectedPersonnel = null;
                 _ = LoadPersonnelAsync();
                 ClearForm();

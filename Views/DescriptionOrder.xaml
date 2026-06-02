@@ -30,16 +30,26 @@
             <Label Content="Наименование:" FontSize="20" FontWeight="Bold" Margin="0,0,20,0"/>
             <Label Grid.Column="1" Content="{Binding DocumentName}" FontSize="18" FontWeight="SemiBold"/>
         </Grid>
-
+    
         <!-- Контент: текст или PDF -->
         <Grid Grid.Row="1" Margin="0,0,0,20">
-            <FlowDocumentScrollViewer 
-                Visibility="{Binding IsPdf, Converter={StaticResource InverseBoolToVisibility}}"
-                FontSize="16"
-                VerticalScrollBarVisibility="Auto"
-                BorderThickness="1"
-                BorderBrush="#FF707070"
-                Background="#FFFEFE">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Статус подписи -->
+            <TextBlock Grid.Row="0" Text="{Binding SignatureStatus}" 
+               FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+
+            <!-- Текст -->
+            <FlowDocumentScrollViewer Grid.Row="1"
+        Visibility="{Binding IsPdf, Converter={StaticResource InverseBoolToVisibility}}"
+        FontSize="16"
+        VerticalScrollBarVisibility="Auto"
+        BorderThickness="1"
+        BorderBrush="#FF707070"
+        Background="#FFFEFE">
                 <FlowDocument>
                     <Paragraph>
                         <Run Text="{Binding DocumentText}"/>
@@ -47,9 +57,9 @@
                 </FlowDocument>
             </FlowDocumentScrollViewer>
 
-            <!-- Контейнер для PDF (WinForms) -->
-            <wfi:WindowsFormsHost x:Name="PdfHost" 
-                                  Visibility="{Binding IsPdf, Converter={StaticResource BoolToVisibility}}"/>
+            <!-- PDF -->
+            <wfi:WindowsFormsHost Grid.Row="1" x:Name="PdfHost" 
+                          Visibility="{Binding IsPdf, Converter={StaticResource BoolToVisibility}}"/>
         </Grid>
 
         <Button Grid.Row="2" Command="{Binding CloseCommand}" Content="Закрыть" 

@@ -7,25 +7,68 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Title="Личное дело" Height="450" Width="800">
-    <Grid>
-        <Label Content="Личное дело" HorizontalAlignment="Left" Margin="36,22,0,0" VerticalAlignment="Top" FontSize="24"/>
 
-        <Label Content="ФИО:" HorizontalAlignment="Left" Margin="94,101,0,0" VerticalAlignment="Top"/>
-        <Label Content="Подразделение:" HorizontalAlignment="Left" Margin="94,143,0,0" VerticalAlignment="Top"/>
-        <Label Content="Должность:" HorizontalAlignment="Left" Margin="94,191,0,0" VerticalAlignment="Top"/>
-        <Label Content="Телефон:" HorizontalAlignment="Left" Margin="94,236,0,0" VerticalAlignment="Top"/>
-        <Label Content="Адрес:" HorizontalAlignment="Left" Margin="94,292,0,0" VerticalAlignment="Top"/>
-        <Label Content="Почта:" HorizontalAlignment="Left" Margin="94,340,0,0" VerticalAlignment="Top"/>
+    <Window.Resources>
+        <local:StringToImageSourceConverter x:Key="ImageConverter" />
+    </Window.Resources>
 
-        <Label Name="LabelName" Content="{Binding Name}" HorizontalAlignment="Left" Margin="138,101,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelDivision" Content="{Binding Division}" HorizontalAlignment="Left" Margin="237,143,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelRole" Content="{Binding Role}" HorizontalAlignment="Left" Margin="173,191,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelPhone" Content="{Binding Phone}" HorizontalAlignment="Left" Margin="163,236,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelAdress" Content="{Binding Address}" HorizontalAlignment="Left" Margin="144,292,0,0" VerticalAlignment="Top"/>
-        <Label Name="LabelEmail" Content="{Binding Email}" HorizontalAlignment="Left" Margin="145,340,0,0" VerticalAlignment="Top"/>
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-        <Button Command="{Binding BackCommand}" Content="Назад" 
-                HorizontalAlignment="Left" Margin="666,21,0,0" 
-                VerticalAlignment="Top" Height="43" Width="89" FontSize="18"/>
+        <!-- Левая часть: данные -->
+        <StackPanel Grid.Column="0" Margin="0,0,20,0">
+            <Label Content="Личное дело" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Заголовки -->
+                <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                    <Label Content="ФИО:" Margin="0,0,0,8"/>
+                    <Label Content="Подразделение:" Margin="0,0,0,8"/>
+                    <Label Content="Должность:" Margin="0,0,0,8"/>
+                    <Label Content="Телефон:" Margin="0,0,0,8"/>
+                    <Label Content="Адрес:" Margin="0,0,0,8"/>
+                    <Label Content="Почта:" Margin="0,0,0,8"/>
+                </StackPanel>
+
+                <!-- Значения -->
+                <StackPanel Grid.Column="1">
+                    <Label Name="LabelName" Content="{Binding Name}" Margin="0,0,0,8"/>
+                    <Label Name="LabelDivision" Content="{Binding Division}" Margin="0,0,0,8"/>
+                    <Label Name="LabelRole" Content="{Binding Role}" Margin="0,0,0,8"/>
+                    <Label Name="LabelPhone" Content="{Binding Phone}" Margin="0,0,0,8"/>
+                    <Label Name="LabelAdress" Content="{Binding Address}" Margin="0,0,0,8"/>
+                    <Label Name="LabelEmail" Content="{Binding Email}" Margin="0,0,0,8"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <!-- Правая часть: аватар и кнопка Назад -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Аватар вверху справа -->
+            <Border Grid.Row="0" BorderBrush="#FF707070" BorderThickness="1" CornerRadius="5" 
+                    Width="120" Height="120" HorizontalAlignment="Right" Margin="0,0,0,0">
+                <Image Stretch="Uniform" 
+                       Source="{Binding AvatarUrl, Converter={StaticResource ImageConverter}}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+            <!-- Кнопка Назад внизу справа -->
+            <Button Grid.Row="2" Command="{Binding BackCommand}" Content="Назад" 
+                    Height="35" Width="80" FontSize="16" HorizontalAlignment="Right"/>
+        </Grid>
     </Grid>
 </Window>

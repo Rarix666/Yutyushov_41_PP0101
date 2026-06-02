@@ -79,12 +79,13 @@
                 </StackPanel>
 
                 <!-- Файл PDF -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8" Cursor="">
                     <Label Content="Файл (PDF):" Width="110" VerticalAlignment="Center"/>
                     <TextBox Name="TxtPdfFile" Text="{Binding PdfFilePath, UpdateSourceTrigger=PropertyChanged}"
                              IsReadOnly="True" Width="230" TextWrapping="Wrap" VerticalAlignment="Center"/>
                     <Button Command="{Binding SelectPdfCommand}" Content="Обзор"
                             Width="100" Height="29" Margin="8,0,0,0"/>
+                    <CheckBox Content="Подписать документ" IsChecked="{Binding IsSignEnabled}" Margin="40,5,0,0"/>
                 </StackPanel>
 
                 <!-- Описание -->

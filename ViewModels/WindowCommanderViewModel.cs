@@ -1,18 +1,19 @@
 ﻿using AISDisciplineDesc.Core;
+using AISDisciplineDesc.Models;
 using AISDisciplineDesc.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using WpfRichTextBox = System.Windows.Controls.RichTextBox;
 using WpfMessageBox = System.Windows.MessageBox;
-using System.IO;
+using WpfRichTextBox = System.Windows.Controls.RichTextBox;
 
 namespace AISDisciplineDesc.ViewModels
 {
@@ -54,11 +55,20 @@ namespace AISDisciplineDesc.ViewModels
         }
         public DateTime MinDueDate => DateTime.Today;
 
+        //Свойства для PDF и сертификатов
+
         private string _pdfFilePath;
         public string PdfFilePath
         {
             get => _pdfFilePath;
             set => SetProperty(ref _pdfFilePath, value);
+        }
+
+        private bool _isSignEnabled = true;
+        public bool IsSignEnabled
+        {
+            get => _isSignEnabled;
+            set => SetProperty(ref _isSignEnabled, value);
         }
 
         private string? _avatarUrl;
@@ -136,6 +146,29 @@ namespace AISDisciplineDesc.ViewModels
             {
                 // Читаем исходный PDF
                 byte[] originalPdf = await File.ReadAllBytesAsync(PdfFilePath);
+
+                if (IsSignEnabled) //Проверка наличия сертификата для подписи
+                {
+                    try
+                    {
+                        string pfxPath = AppState.UsbAuth.GetPfxFilePath();
+                        if (string.IsNullOrEmpty(pfxPath))
+                        {
+                            WpfMessageBox.Show("Вставьте флешку с сертификатом подписи.", "Ошибка",
+                                MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+
+                        var signingService = new PdfSigningService();
+                        originalPdf = signingService.SignPdf(originalPdf, pfxPath, AppSettings.PfxPassword);
+                    }
+                    catch (Exception ex)
+                    {
+                        WpfMessageBox.Show($"Ошибка подписи PDF:\n{ex}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
+
                 // Шифруем общим ключом
                 byte[] encryptedPdf = AppState.Encryption.Encrypt(originalPdf);
                 // Генерируем уникальное имя файла

@@ -16,8 +16,11 @@ namespace AISDisciplineDesc.Models
             var builder = new ConfigurationBuilder()
                 .AddUserSecrets<MainWindow>(); 
             Configuration = builder.Build();
+
         }
 
         public static string ApiKey => Configuration["API_KEY"]; //Конфигуратор скрытого API-ключа
+
+        public static string PfxPassword = "MyStrongPassword123"; //Пароль от сертификата
     }
 }

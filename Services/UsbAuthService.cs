@@ -104,5 +104,23 @@ namespace AISDisciplineDesc.Services
             }
             return list;
         }
+
+        public string GetPfxFilePath()
+        {
+            foreach (var d in DriveInfo.GetDrives())
+            {
+                if (d.DriveType != DriveType.Removable || !d.IsReady)
+                    continue;
+
+                string keyPath = Path.Combine(d.RootDirectory.FullName, KeyFileName);
+                if (File.Exists(keyPath))
+                {
+                    string pfxPath = Path.Combine(d.RootDirectory.FullName, "AISDisciplineDesc.pfx");
+                    if (File.Exists(pfxPath))
+                        return pfxPath;
+                }
+            }
+            return null;
+        }
     }
 }

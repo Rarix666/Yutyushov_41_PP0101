@@ -44,6 +44,13 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _pdfData, value);
         }
 
+        private string _signatureStatus;
+        public string SignatureStatus
+        {
+            get => _signatureStatus;
+            set => SetProperty(ref _signatureStatus, value);
+        }
+
         public RelayCommand CloseCommand { get; }
 
         public DescriptionOrderViewModel(Window owner, Documents document) //Валидация файла PDF перед отображением
@@ -74,14 +81,29 @@ namespace AISDisciplineDesc.ViewModels
                 using var httpClient = new HttpClient();
                 var rawBytes = await httpClient.GetByteArrayAsync(url);
 
+                byte[] finalBytes;
                 try
                 {
-                    PdfData = AppState.Encryption.Decrypt(rawBytes);
+                    finalBytes = AppState.Encryption.Decrypt(rawBytes);
                 }
                 catch
                 {
-                    PdfData = rawBytes;
+                    finalBytes = rawBytes;
                 }
+
+                // Проверка подписи
+                var signatures = PdfSigningService.GetSignatureInfo(finalBytes);
+                if (signatures.Any())
+                {
+                    var sig = signatures[0];
+                    SignatureStatus = $"Подписано: {sig.SignerName} ({sig.SigningTime:dd.MM.yyyy HH:mm}) | Статус: {(sig.IsValid ? "Действительна" : "Недействительна")}";
+                }
+                else
+                {
+                    SignatureStatus = "Документ не подписан";
+                }
+
+                PdfData = finalBytes;
             }
             catch (Exception ex)
             {

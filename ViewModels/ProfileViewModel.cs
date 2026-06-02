@@ -24,8 +24,17 @@ namespace AISDisciplineDesc.ViewModels
 
         public ProfileViewModel(Window owner)
         {
+            AvatarUrl = AppState.CurrentUser?.avatar_url;
+
             _owner = owner;
             BackCommand = new RelayCommand(GoBack);
+        }
+
+        private string? _avatarUrl;
+        public string? AvatarUrl
+        {
+            get => _avatarUrl;
+            set => SetProperty(ref _avatarUrl, value);
         }
 
         private void GoBack() //Переход в главное окно в зависимости от роли пользователя
