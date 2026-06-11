@@ -201,7 +201,7 @@ namespace AISDisciplineDesc.ViewModels
             catch (Exception ex)
             {
                 await AppState.Logger.Error(ex);
-                WpfMessageBox.Show($"Возникла техническая ошибка, обратитесь к администратору");
+                WpfMessageBox.Show($"Возникла техническая ошибка, обратитесь к администратору", "Техническая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

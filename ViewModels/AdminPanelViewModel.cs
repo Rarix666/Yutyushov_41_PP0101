@@ -298,13 +298,13 @@ namespace AISDisciplineDesc.ViewModels
             {
                 await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} обновил данные пользователя {Login}");
                 result = await _supabase.UpdateUser(SelectedUser.id, Login, Password, Name, divisionName, unitNumber, SelectedRole, FlashSerial);
-                if (result) WpfMessageBox.Show("Пользователь обновлён!");
+                if (result) WpfMessageBox.Show("Пользователь обновлён!", "Обновление аккаунта", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
                 await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} добавил пользователя {Login}");
                 result = await _supabase.CreateUser(Login, Password, Name, divisionName, unitNumber, SelectedRole, FlashSerial);
-                if (result) WpfMessageBox.Show("Пользователь успешно добавлен!");
+                if (result) WpfMessageBox.Show("Пользователь успешно добавлен!", "Добавление аккаунта", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             if (result)
@@ -315,7 +315,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             else
             {
-                WpfMessageBox.Show(SelectedUser != null ? "Ошибка при обновлении." : "Такой пользователь уже существует.");
+                WpfMessageBox.Show(SelectedUser != null ? "Ошибка при обновлении." : "Такой пользователь уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -337,8 +337,8 @@ namespace AISDisciplineDesc.ViewModels
             bool success = await _supabase.DeleteUser(SelectedUser.id);
             if (success)
             {
-                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} удалил пользователя {SelectedUser.login}");
-                WpfMessageBox.Show("Пользователь удалён.");
+                await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} удалил аккаунт {SelectedUser.login}");
+                WpfMessageBox.Show("Аккаунт удалён.", "Удаление аккаунта", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadUsersAsync();
                 ClearForm();
                 SelectedUser = null;

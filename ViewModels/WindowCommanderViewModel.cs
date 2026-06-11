@@ -177,7 +177,7 @@ namespace AISDisciplineDesc.ViewModels
                 uploadedFileUrl = await _supabase.UploadDocumentFile(encryptedPdf, fileName);
                 if (uploadedFileUrl == null)
                 {
-                    WpfMessageBox.Show("Не удалось загрузить PDF-файл. Проверьте подключение и настройки бакета.");
+                    WpfMessageBox.Show("Не удалось загрузить PDF-файл. Проверьте подключение.");
                     return;
                 }
             }
@@ -185,7 +185,7 @@ namespace AISDisciplineDesc.ViewModels
             bool result = await _supabase.CreateOrder(cunit, cdivision, cdescription, cname, cduedate, cdatedispatch, uploadedFileUrl);
             if (result)
             {
-                WpfMessageBox.Show("Приказ отправлен");
+                WpfMessageBox.Show("Приказ отправлен", "Отпрвление приказа", MessageBoxButton.OK, MessageBoxImage.Information);
                 OrderName = "";
                 DueDate = null;
                 PdfFilePath = "";
@@ -194,7 +194,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             else
             {
-                WpfMessageBox.Show("Ошибка отправления");
+                WpfMessageBox.Show("Ошибка отправления", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

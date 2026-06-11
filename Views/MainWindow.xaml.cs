@@ -25,12 +25,5 @@ namespace AISDisciplineDesc
 
             this.Closing += (s, e) => System.Windows.Application.Current.Shutdown();
         }
-        private void textBox1_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (DataContext is MainWindowViewModel vm)
-            {
-                vm.UpdatePassword(textBox1.Password);
-            }
-        }
     }
 }

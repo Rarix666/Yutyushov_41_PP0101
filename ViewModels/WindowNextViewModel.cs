@@ -17,6 +17,8 @@ namespace AISDisciplineDesc.ViewModels
     {
         private readonly SupabaseClient _supabase = AppState.Supabase;
 
+        private readonly Window _owner;
+
         private ObservableCollection<Documents> _documents;
 
         public string UserName => AppState.CurrentUser.name ?? "Личное дело";
@@ -47,8 +49,9 @@ namespace AISDisciplineDesc.ViewModels
         public RelayCommand ExitCommand { get; }
         public AsyncRelayCommand<Documents> OpenOrderCommand { get; }
 
-        public WindowNextViewModel()
+        public WindowNextViewModel(Window owner)
         {
+            _owner = owner;
             Documents = new ObservableCollection<Documents>();
             AvatarUrl = AppState.CurrentUser?.avatar_url;
 
@@ -68,7 +71,7 @@ namespace AISDisciplineDesc.ViewModels
                 bool success = await _supabase.DocsInformation();
                 if (!success || AppState.Documentation == null)
                 {
-                    WpfMessageBox.Show("Ошибка загрузки данных");
+                    WpfMessageBox.Show("Ошибка загрузки данных", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
@@ -102,7 +105,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (document == null)
             {
-                WpfMessageBox.Show("Выберите приказ для обновления.", "Внимание");
+                WpfMessageBox.Show("Выберите приказ для обновления.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -136,17 +139,15 @@ namespace AISDisciplineDesc.ViewModels
         private void Exit() //Выход из главного окна
         {
             MainWindow main = new MainWindow();
+            _owner.Hide();
             main.Show();
-
-            var current = WpfApplication.Current.Windows.OfType<WindowNext>().FirstOrDefault();
-            current?.Hide();
         }
 
         private async Task OpenOrderAsync(Documents? documents) //Переход в окно просмотра документов с помощью контекстного меню
         {
             if (documents == null)
             {
-                WpfMessageBox.Show("Не выбрана запись для открытия.", "Ошибка");
+                WpfMessageBox.Show("Не выбрана запись для открытия.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

@@ -146,7 +146,7 @@ namespace AISDisciplineDesc.ViewModels
         {
             if (SelectedPersonnel == null)
             {
-                WpfMessageBox.Show("Выберите аккаунт для обновления.");
+                WpfMessageBox.Show("Выберите аккаунт для обновления.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -179,7 +179,7 @@ namespace AISDisciplineDesc.ViewModels
                 int index = PersonnelList.IndexOf(SelectedPersonnel);
                 if (index >= 0)
                     PersonnelList[index] = SelectedPersonnel;
-                WpfMessageBox.Show("Данные обновлены.");
+                WpfMessageBox.Show("Данные обновлены.", "Обновление личного дела", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 await AppState.Logger.Info($"Пользователь {AppState.CurrentUser.login} обновил данные: ФИО: {personalName}, ID: {personalId}");
 
@@ -189,7 +189,7 @@ namespace AISDisciplineDesc.ViewModels
             }
             else
             {
-                WpfMessageBox.Show("Ошибка обновления.");
+                WpfMessageBox.Show("Ошибка обновления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

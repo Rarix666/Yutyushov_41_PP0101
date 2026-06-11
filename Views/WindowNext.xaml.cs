@@ -24,7 +24,7 @@ namespace AISDisciplineDesc
         public WindowNext()
         {
             InitializeComponent();
-            DataContext = new WindowNextViewModel();
+            DataContext = new WindowNextViewModel(this);
 
             this.Closing += (s, e) => System.Windows.Application.Current.Shutdown();
         }

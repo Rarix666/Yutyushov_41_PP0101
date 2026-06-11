@@ -28,7 +28,19 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _password, value);
         }
 
+        private bool _isPasswordVisible = false;
+        public bool IsPasswordVisible
+        {
+            get => _isPasswordVisible;
+            set
+            {
+                _isPasswordVisible = value;
+                OnPropertyChanged();
+            }
+        } //Отображение/Скрытие пароля
+
         public AsyncRelayCommand LoginCommand { get; }
+        public RelayCommand TogglePasswordVisibilityCommand { get; } //Показ и скрытие пароля
 
         public MainWindowViewModel(Window owner)
         {
@@ -39,6 +51,13 @@ namespace AISDisciplineDesc.ViewModels
                 AppState.Supabase = new SupabaseClient();
             }
             LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync);
+
+            TogglePasswordVisibilityCommand = new RelayCommand(ShowPassword);
+        }
+
+        private void ShowPassword()
+        {
+            IsPasswordVisible = !IsPasswordVisible;
         }
 
         private async Task ExecuteLoginAsync()
@@ -69,7 +88,7 @@ namespace AISDisciplineDesc.ViewModels
                     if (AppState.CurrentUser.role == "admin")
                     {
                         await AppState.Logger.Info($"Администратор {AppState.CurrentUser.name} вошёл в систему");
-                        WpfMessageBox.Show("Вы авторизованы как администратор");
+                        WpfMessageBox.Show("Вы авторизованы как администратор", "Авторизация", MessageBoxButton.OK, MessageBoxImage.Information);
                         AdminPanel admin = new AdminPanel();
                         admin.Show();
                         _owner.Hide();
@@ -77,7 +96,7 @@ namespace AISDisciplineDesc.ViewModels
                     else if (AppState.CurrentUser.role == "Командир части")
                     {
                         await AppState.Logger.Info($"Командир части {AppState.CurrentUser.name} вошёл в систему");
-                        WpfMessageBox.Show("Вы авторизованы как командир части");
+                        WpfMessageBox.Show("Вы авторизованы как командир части", "Авторизация", MessageBoxButton.OK, MessageBoxImage.Information);
                         WindowCommander commander = new WindowCommander();
                         commander.Show();
                         _owner.Hide();
@@ -85,7 +104,7 @@ namespace AISDisciplineDesc.ViewModels
                     else
                     {
                         await AppState.Logger.Info($"Командир подразделения {AppState.CurrentUser.name} вошёл в систему");
-                        WpfMessageBox.Show("Авторизация прошла успешно!");
+                        WpfMessageBox.Show("Авторизация прошла успешно!", "Авторизация", MessageBoxButton.OK, MessageBoxImage.Information);
                         WindowNext window = new WindowNext();
                         window.Show();
                         _owner.Hide();
@@ -94,7 +113,7 @@ namespace AISDisciplineDesc.ViewModels
                 else
                 {
                     await AppState.Logger.Warn($"Попытка авторизации с неверными данными. Login: {login}");
-                    WpfMessageBox.Show("Данного пользователя не существует");
+                    WpfMessageBox.Show("Данного аккаунта не существует", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             catch (Exception ex) 
@@ -102,11 +121,6 @@ namespace AISDisciplineDesc.ViewModels
                 await AppState.Logger.Error(ex);
                 WpfMessageBox.Show("Ошибка авторизации");
             }
-        }
-
-        public void UpdatePassword(string newPassword) //Метод чтобы вытягивать то что находится в поле пароля и передавать в БД для авторизации
-        {
-            Password = newPassword;
         }
     }
 }
