@@ -50,21 +50,30 @@
             </Grid>
         </StackPanel>
 
-        <!-- Правая часть: аватар и кнопка Назад -->
+        <!-- Правая часть: аватар, кнопка смены фото и кнопка Назад -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <!-- 0: аватар + кнопка смены -->
                 <RowDefinition Height="*"/>
+                <!-- 1: свободное пространство -->
                 <RowDefinition Height="Auto"/>
+                <!-- 2: кнопка Назад -->
             </Grid.RowDefinitions>
 
-            <!-- Аватар вверху справа -->
-            <Border Grid.Row="0" BorderBrush="#FF707070" BorderThickness="1" CornerRadius="5" 
-                    Width="120" Height="120" HorizontalAlignment="Right" Margin="0,0,0,0">
-                <Image Stretch="Uniform" 
-                       Source="{Binding AvatarUrl, Converter={StaticResource ImageConverter}}"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Border>
+            <!-- Аватар и кнопка смены фото (вложенная панель) -->
+            <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Border BorderBrush="#FF707070" BorderThickness="1" CornerRadius="5" 
+                        Width="120" Height="120" Margin="0,0,0,10">
+                    <Image Stretch="Uniform" 
+                           Source="{Binding AvatarUrl, Converter={StaticResource ImageConverter}}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <Button Content="Сменить фото" 
+                        Command="{Binding ChangeAvatarCommand}" 
+                        Width="130" Height="30" 
+                        HorizontalAlignment="Center" Cursor="Hand"/>
+            </StackPanel>
 
             <!-- Кнопка Назад внизу справа -->
             <Button Grid.Row="2" Command="{Binding BackCommand}" Content="Назад" 

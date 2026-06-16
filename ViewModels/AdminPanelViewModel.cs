@@ -278,7 +278,7 @@ namespace AISDisciplineDesc.ViewModels
                 await AppState.Logger.Error(ex);
                 WpfMessageBox.Show($"Ошибка: {ex}");
             }
-        }
+        } //Загрузка данных пользователей
 
         private async Task SaveUserAsync() //Добавление или обновление данных пользователя
         {

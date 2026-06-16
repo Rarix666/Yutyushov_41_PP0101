@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AISDisciplineDesc.Services
 {
     public enum LogLevel { Info, Warn, Error }
-    internal class LoggerService
+    public class LoggerService
     {
         private readonly SupabaseClient _client;
 

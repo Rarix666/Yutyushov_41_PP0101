@@ -21,7 +21,7 @@ using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
 {
-    internal class SupabaseClient
+    public class SupabaseClient
     {
         private readonly RestClient client;
         private const string BaseURL = "https://mczpqiixbyvxxsiectok.supabase.co";
@@ -34,16 +34,16 @@ namespace AISDisciplineDesc.Services
         }
 
         //-------Работа с базой данных и интерфейсом--------
-        private RestRequest CreateRequest(string endpoint, Method method = Method.Post) //Структура запроса к Supabase
+        private RestRequest CreateRequest(string endpoint, Method method = Method.Post)
         {
             var request = new RestRequest(endpoint, method);
             request.AddHeader("apikey", APIkey);
             request.AddHeader("MainWindow", $"Bearer {APIkey}");
             request.AddHeader("Content-Type", "application/json");
             return request;
-        }
+        } //Структура запроса к Supabase
 
-        public async Task<bool> AuthenticateUser(string login, string password) //Авторизация
+        public async Task<bool> AuthenticateUser(string login, string password)
         {
             try
             {
@@ -81,9 +81,9 @@ namespace AISDisciplineDesc.Services
             {
                 return false;
             }
-        }
+        } //Авторизация
 
-        public async Task<bool> DocsInformation() //Метод необходимый для заполнения datagrid с документами
+        public async Task<bool> DocsInformation()
         {
             var request = CreateRequest("/rest/v1/rpc/info_documents_for_lead");
             var response = await client.ExecuteAsync(request);
@@ -97,9 +97,9 @@ namespace AISDisciplineDesc.Services
             {
                 return false;
             }
-        }
+        } //Метод необходимый для заполнения datagrid с документами
 
-        public async Task<bool> AdminInformation() //Метод необходимый для заполнения datagrid администратора
+        public async Task<bool> AdminInformation()
         {
             var request = CreateRequest("/rest/v1/rpc/all_data_users");
             var response = await client.ExecuteAsync(request);
@@ -113,16 +113,16 @@ namespace AISDisciplineDesc.Services
             {
                 return false;
             }
-        }
+        } //Метод необходимый для заполнения datagrid администратора
 
-        public async Task<List<PersonnelData>> GetPersonnelList() //Метод для получения всех данных командиров подразделений
+        public async Task<List<PersonnelData>> GetPersonnelList()
         {
             var request = CreateRequest("/rest/v1/rpc/get_all_users", Method.Post);
             request.AddJsonBody(new { });
             var response = await client.ExecuteAsync(request);
             if (!response.IsSuccessful) return new List<PersonnelData>();
             return JsonConvert.DeserializeObject<List<PersonnelData>>(response.Content);
-        }
+        } //Метод для получения всех данных командиров подразделений
 
         public async Task<bool> CreateUser(string clogin, string cpassword, string cname, int? cdivision, int? cunit, string crole, string cflash_serial)
         {
@@ -145,7 +145,7 @@ namespace AISDisciplineDesc.Services
             return response.IsSuccessful && response.Content == "true";
         } //Функция удаления аккаунтов пользователей
 
-        public async Task<bool> DivInformation() //Метод необходимый для заполнения combobox подразделений
+        public async Task<bool> DivInformation()
         {
             var request = CreateRequest("/rest/v1/rpc/divisions_for_combobox");
             var response = await client.ExecuteAsync(request);
@@ -159,7 +159,7 @@ namespace AISDisciplineDesc.Services
             {
                 return false;
             }
-        }
+        } //Метод необходимый для заполнения combobox подразделений
 
         public async Task<bool> UnitInformation() 
         {
@@ -192,14 +192,14 @@ namespace AISDisciplineDesc.Services
             return response.StatusCode == System.Net.HttpStatusCode.OK && response.Content == "true";
         } //Функция добавления приказа
 
-        public async Task<bool> UpdateStatusOrder(int upid, string upstatus) //Метод обновления данных о статусе приказов
+        public async Task<bool> UpdateStatusOrder(int upid, string upstatus)
         {
             var param = new { upid, upstatus };
             var request = CreateRequest("rest/v1/rpc/update_document_status", Method.Post);
             request.AddJsonBody(param);
             var response = await client.ExecuteAsync(request);
             return response.StatusCode == System.Net.HttpStatusCode.NoContent;
-        }
+        } //Метод обновления данных о статусе приказов
 
         public async Task<bool> UpdateUser(int p_id, string p_login, string p_password, string p_name, int? p_division, int? p_unit, string p_role, string p_flash_serial)
         {
@@ -254,7 +254,7 @@ namespace AISDisciplineDesc.Services
         {
             var request = CreateRequest("rest/v1/rpc/update_overdue_documents", Method.Post);
             await client.ExecuteAsync(request);
-        }
+        } //Автоматическое обновление статуса при долгом не выполнении задачи
 
         // -------Работа с логами--------
 
@@ -304,43 +304,7 @@ namespace AISDisciplineDesc.Services
         } //Функция вывода логов
 
         // -------Работа с PDF--------
-
-        public async Task<string> UploadDocumentFile(string localFilePath, string bucketName = "documents")
-        {
-            try
-            {
-                var baseUrl = BaseURL.TrimEnd('/');
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(localFilePath)}";
-                var url = $"{baseUrl}/storage/v1/object/{bucketName}/{fileName}";
-
-                var fileBytes = await File.ReadAllBytesAsync(localFilePath);
-
-                using (var httpClient = new HttpClient())
-                {
-                    httpClient.DefaultRequestHeaders.Add("apikey", APIkey);
-                    httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {APIkey}");
-
-                    using (var content = new ByteArrayContent(fileBytes))
-                    {
-                        content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
-                        var response = await httpClient.PostAsync(url, content);
-                        var responseBody = await response.Content.ReadAsStringAsync();
-
-                        if (response.IsSuccessStatusCode)
-                            return $"{baseUrl}/storage/v1/object/public/{bucketName}/{fileName}";
-
-                        WpfMessageBox.Show($"Upload failed: {response.StatusCode}\n{responseBody}", "Ошибка загрузки PDF");
-                        return null;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                WpfMessageBox.Show($"Исключение:\n{ex.Message}");
-                return null;
-            }
-        } //Функция для отображения незашифрованных документов
-        public async Task<string> UploadDocumentFile(byte[] fileData, string fileName, string bucketName = "documents")
+        public async Task<string> UploadDocumentFile(byte[] fileData, string fileName, string bucketName = "documents", string contentType = "application/pdf")
         {
             try
             {
@@ -354,14 +318,14 @@ namespace AISDisciplineDesc.Services
 
                     using (var content = new ByteArrayContent(fileData))
                     {
-                        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+                        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
                         var response = await httpClient.PostAsync(url, content);
                         var responseBody = await response.Content.ReadAsStringAsync();
 
                         if (response.IsSuccessStatusCode)
                             return $"{baseUrl}/storage/v1/object/public/{bucketName}/{fileName}";
 
-                        WpfMessageBox.Show($"Upload failed: {response.StatusCode}\n{responseBody}", "Ошибка загрузки PDF");
+                        WpfMessageBox.Show($"Upload failed: {response.StatusCode}\n{responseBody}", "Ошибка загрузки файла");
                         return null;
                     }
                 }
@@ -372,5 +336,28 @@ namespace AISDisciplineDesc.Services
                 return null;
             }
         } //Функция для отображения зашифрованных документов
+
+        // -------Работа с изображениями---------
+        public async Task<string> UploadAvatar(byte[] imageData, string fileName)
+        {
+            string extension = Path.GetExtension(fileName).ToLowerInvariant();
+            string contentType = extension switch
+            {
+                ".png" => "image/png",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
+
+            return await UploadDocumentFile(imageData, fileName, "avatars", contentType);
+        } //Загруpзка изображения в БД и возвращение URL.
+
+        public async Task<bool> UpdateUserAvatar(int userId, string avatarUrl) //Обновление фото
+        {
+            var request = CreateRequest("rest/v1/rpc/update_user_avatar", Method.Post);
+            request.AddJsonBody(new { p_id = userId, p_avatar_url = avatarUrl });
+            var response = await client.ExecuteAsync(request);
+            return response.IsSuccessful && response.Content?.ToLower() == "true";
+        }
     }
 }

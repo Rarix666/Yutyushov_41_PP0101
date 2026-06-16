@@ -11,7 +11,7 @@ using WpfMessageBox = System.Windows.MessageBox;
 
 namespace AISDisciplineDesc.Services
 {
-    internal class AppState
+    public class AppState
     {
         public static SupabaseClient Supabase { get; set; }
         public static UserData CurrentUser { get; set; }
