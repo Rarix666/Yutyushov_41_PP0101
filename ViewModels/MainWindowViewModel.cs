@@ -55,12 +55,12 @@ namespace AISDisciplineDesc.ViewModels
             TogglePasswordVisibilityCommand = new RelayCommand(ShowPassword);
         }
 
-        private void ShowPassword()
+        private void ShowPassword() //Изменение фото кнопки скрыть пароль
         {
             IsPasswordVisible = !IsPasswordVisible;
         }
 
-        private async Task ExecuteLoginAsync()
+        private async Task ExecuteLoginAsync() //Реализация системы авторизации
         {
             try
             {
@@ -73,9 +73,17 @@ namespace AISDisciplineDesc.ViewModels
                     return;
                 }
 
+                if (LoginAttemptTrackerService.IsLocked(login))
+                {
+                    WpfMessageBox.Show("Слишком много неудачных попыток. Аккаунт заблокирован на 1 минуту.",
+                                       "Блокировка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 bool success = await AppState.Supabase.AuthenticateUser(login, password);
                 if (success)
                 {
+                    LoginAttemptTrackerService.Reset(login);
                     string expectedSerial = AppState.CurrentUser.flash_serial;
                     if (!AppState.UsbAuth.IsValidKeyPresent(expectedSerial))
                     {
@@ -112,8 +120,19 @@ namespace AISDisciplineDesc.ViewModels
                 }
                 else
                 {
-                    await AppState.Logger.Warn($"Попытка авторизации с неверными данными. Login: {login}");
-                    WpfMessageBox.Show("Данного аккаунта не существует", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    LoginAttemptTrackerService.RecordFailedAttempt(login);
+
+                    int remaining = LoginAttemptTrackerService.GetRemainingAttempts(login);
+                    if (remaining > 0)
+                    {
+                        await AppState.Logger.Warn($"Попытка авторизации с неверными данными. Login: {login}");
+                        WpfMessageBox.Show($"Неверный логин или пароль. Осталось попыток: {remaining}", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    else
+                    {
+                        await AppState.Logger.Warn($"Попытка авторизации с неверными данными. Login: {login}");
+                        WpfMessageBox.Show("Аккаунт заблокирован на 1 минуту из-за превышения попыток.", "Блокировка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
             }
             catch (Exception ex) 
