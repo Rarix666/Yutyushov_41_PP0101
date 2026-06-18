@@ -17,5 +17,6 @@ namespace AISDisciplineDesc.Models
         public string address { get; set; }
         public int ? unit { get; set; }
         public string division_name { get; set; }
+        public string avatar_url { get; set; }
     }
 }

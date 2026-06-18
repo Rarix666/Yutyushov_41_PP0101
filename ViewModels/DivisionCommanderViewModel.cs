@@ -4,6 +4,7 @@ using AISDisciplineDesc.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,6 +99,7 @@ namespace AISDisciplineDesc.ViewModels
             set => SetProperty(ref _isEmailInvalid, value);
         }
 
+        public AsyncRelayCommand ChangeAvatarCommand { get; }
         public AsyncRelayCommand LoadPersonnelCommand { get; }
         public AsyncRelayCommand UpdateCommand { get; }
         public RelayCommand ClearCommand { get; }
@@ -113,12 +115,13 @@ namespace AISDisciplineDesc.ViewModels
             UpdateCommand = new AsyncRelayCommand(UpdateAsync);
             ClearCommand = new RelayCommand(() => SelectedPersonnel = null);
             CloseCommand = new RelayCommand(Close);
+            ChangeAvatarCommand = new AsyncRelayCommand(ChangeAvatarAsync);
 
             _ = LoadReferencesAsync();
             _ = LoadPersonnelAsync();
         }
 
-        private async Task LoadPersonnelAsync() //Загрузка данных в datagrid с учётом роли пользователей
+        private async Task LoadPersonnelAsync()
         {
             try
             {
@@ -132,17 +135,17 @@ namespace AISDisciplineDesc.ViewModels
             {
                 WpfMessageBox.Show($"Ошибка загрузки: {ex.Message}");
             }
-        }
+        } //Загрузка данных в datagrid с учётом роли пользователей
 
-        private async Task LoadReferencesAsync() //Загрузка данных подразделений в combobox
+        private async Task LoadReferencesAsync()
         {
             await AppState.LoadDivisionsAsync();
             Divisions.Clear();
             foreach (var div in AppState.divisions)
                 Divisions.Add(div);
-        }
+        } //Загрузка данных подразделений в combobox
 
-        private async Task UpdateAsync() //Обновлнение данных командира в панели управления личными делами
+        private async Task UpdateAsync()
         {
             if (SelectedPersonnel == null)
             {
@@ -191,15 +194,67 @@ namespace AISDisciplineDesc.ViewModels
             {
                 WpfMessageBox.Show("Ошибка обновления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        } //Обновлнение данных командира в панели управления личными делами
+
+        private async Task ChangeAvatarAsync()
+        {
+            string personalName = SelectedPersonnel.name;
+            int personalId = SelectedPersonnel.id;
+            if (SelectedPersonnel == null)
+            {
+                WpfMessageBox.Show("Выберите командира подразделения для смены фото!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Изображения (*.png, *.jpg, *.jpeg)|*.png;*.jpg;*.jpeg",
+                Title = "Выберите новое фото"
+            };
+
+            if (dialog.ShowDialog() != true) return;
+
+            try
+            {
+                byte[] imageBytes = await File.ReadAllBytesAsync(dialog.FileName);
+                string fileName = $"{SelectedPersonnel.id}_{Guid.NewGuid()}{Path.GetExtension(dialog.FileName)}";
+
+                string publicUrl = await AppState.Supabase.UploadAvatar(imageBytes, fileName);
+                if (publicUrl == null)
+                {
+                    WpfMessageBox.Show("Ошибка загрузки фото на сервер");
+                    return;
+                }
+
+                bool updated = await AppState.Supabase.UpdateUserAvatar(SelectedPersonnel.id, publicUrl);
+                if (!updated)
+                {
+                    WpfMessageBox.Show("Не удалось обновить фото в базе данных");
+                    return;
+                }
+
+                SelectedPersonnel.avatar_url = publicUrl;
+
+                int index = PersonnelList.IndexOf(SelectedPersonnel);
+                if (index >= 0)
+                    PersonnelList[index] = SelectedPersonnel;
+
+                WpfMessageBox.Show("Фото сотрудника обновлено");
+                await AppState.Logger.Info($"Командир {AppState.CurrentUser.login} сменил фото в личном деле {personalName} (id={personalId})");
+            }
+            catch (Exception ex)
+            {
+                WpfMessageBox.Show($"Ошибка при смене фото: {ex.Message}");
+            }
         }
 
-        private void ClearForm() //Очистка данных на форме
+        private void ClearForm()
         {
             Phone = "";
             Email = "";
             Address = "";
             SelectedDivision = null;
-        }
+        } //Очистка данных на форме
 
         private void Close()
         {

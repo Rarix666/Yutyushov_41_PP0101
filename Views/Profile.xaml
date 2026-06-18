@@ -69,10 +69,6 @@
                            Source="{Binding AvatarUrl, Converter={StaticResource ImageConverter}}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Border>
-                <Button Content="Сменить фото" 
-                        Command="{Binding ChangeAvatarCommand}" 
-                        Width="130" Height="30" 
-                        HorizontalAlignment="Center" Cursor="Hand"/>
             </StackPanel>
 
             <!-- Кнопка Назад внизу справа -->
