@@ -75,7 +75,7 @@ namespace AISDisciplineDesc.ViewModels
 
                 if (LoginAttemptTrackerService.IsLocked(login))
                 {
-                    WpfMessageBox.Show("Слишком много неудачных попыток. Аккаунт заблокирован на 1 минуту.",
+                    WpfMessageBox.Show("Слишком много неудачных попыток. Аккаунт заблокирован на 1 минуту!",
                                        "Блокировка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -87,7 +87,7 @@ namespace AISDisciplineDesc.ViewModels
                     string expectedSerial = AppState.CurrentUser.flash_serial;
                     if (!AppState.UsbAuth.IsValidKeyPresent(expectedSerial))
                     {
-                        WpfMessageBox.Show("Вставьте назначенную вам флешку для авторизации.");
+                        WpfMessageBox.Show("Вставьте назначенную вам флешку для авторизации!", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 

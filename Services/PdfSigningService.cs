@@ -62,15 +62,14 @@ namespace AISDisciplineDesc.Services
             }
         }
 
-        public class PdfSignatureInfo
+        public class PdfSignatureInfo //Конструктор для информация об электронной подписи документа
         {
             public string SignerName { get; set; }
             public DateTime SigningTime { get; set; }
             public bool IsValid { get; set; }
-            public string Reason { get; set; }
         }
 
-        public static List<PdfSignatureInfo> GetSignatureInfo(byte[] pdfData)
+        public static List<PdfSignatureInfo> GetSignatureInfo(byte[] pdfData) //Вывод информации об электронной подписи документа
         {
             var result = new List<PdfSignatureInfo>();
             try

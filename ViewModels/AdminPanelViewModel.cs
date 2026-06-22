@@ -194,9 +194,9 @@ namespace AISDisciplineDesc.ViewModels
                 SelectedUser.is_locked = true;
                 await LoadUsersAsync();
                 UpdateLockVisibility();
-                WpfMessageBox.Show("Пользователь заблокирован.");
+                WpfMessageBox.Show("Пользователь заблокирован", "Блокировка аккаунта", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else WpfMessageBox.Show("Ошибка блокировки.");
+            else WpfMessageBox.Show("Ошибка блокировки");
         }
 
         private async Task UnlockUserAsync() //Разблокировка аккаунта
@@ -209,9 +209,9 @@ namespace AISDisciplineDesc.ViewModels
                 SelectedUser.is_locked = false;
                 await LoadUsersAsync();
                 UpdateLockVisibility();
-                WpfMessageBox.Show("Пользователь разблокирован.");
+                WpfMessageBox.Show("Пользователь разблокирован", "Разблокировка аккаунта", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else WpfMessageBox.Show("Ошибка разблокировки.");
+            else WpfMessageBox.Show("Ошибка разблокировки");
         }
 
         private void UpdateLockVisibility() //Обновление текста изменения статуса блокировки на кнопке в контекстном меню
@@ -286,7 +286,7 @@ namespace AISDisciplineDesc.ViewModels
                 string.IsNullOrWhiteSpace(Name) || SelectedDivision == null ||
                 SelectedUnit == null || string.IsNullOrWhiteSpace(SelectedRole))
             {
-                WpfMessageBox.Show("Заполните все поля!");
+                WpfMessageBox.Show("Заполните все поля!", "Пустые поля", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 

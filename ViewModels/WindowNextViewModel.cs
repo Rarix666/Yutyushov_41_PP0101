@@ -109,7 +109,7 @@ namespace AISDisciplineDesc.ViewModels
                 return;
             }
 
-            var result = WpfMessageBox.Show($"Обновить статус документа {document.Name}?",
+            var result = WpfMessageBox.Show($"Обновить статус документа {document.Name}? ВНИМАНИЕ: после обновления статуса, документ исчезнет из списка!",
                                          "Подтверждение обновления статуса",
                                          MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result != MessageBoxResult.Yes)
